@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-if [ -d "/workspaces" ];then 
+if [ -d "/workspaces" ];then
 	SCRIPT_DIR="/workspaces"
 else
 	SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.devcontainer/"
-fi 
+fi
 
 SCRIPT_PATH="$SCRIPT_DIR/automator/src/lib/os.sh"
 # shellcheck source=/dev/null
@@ -281,8 +281,60 @@ function generate_git_config(){
 	printf "Email : "
 	read -r "EMAIL"
 	_file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
-	else 
+	else
 	echo -e "${YELLOW}\nAborting Generation.\n .devcontainer/dotfiles/.gitconfig Exists${NC}"
+	fi
+}
+
+# Set GNUPGHOME to create gpg keys in temp foleder
+function configure_to_create_in_temp_folder(){
+    GNUPGHOME="$(mktemp -d)"
+    export GNUPGHOME
+    echo "GNUPGHOME=$GNUPGHOME"
+}
+
+function create_keys(){
+    gpg2 --full-generate-key --batch  <<EOF
+%echo Generating a GPG key
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
+Subkey-Usage: encrypt
+Name-Real: $CN
+Name-Email: $EMAIL
+Expire-Date: 1y
+%no-protection
+%commit
+%echo Done
+EOF
+}
+
+function store_keys(){
+    gpg2 --export -a "$EMAIL" > .devcontainer/.gpg2/public.key
+    gpg2 --export-secret-keys --armor > .devcontainer/.gpg2/private.key
+}
+
+function list_gpg2_keys(){
+    gpg2 --list-keys
+}
+
+function generate_gpg_keys(){
+	printf "User Name : "
+	read -r "CN"
+	printf "Email : "
+	read -r "EMAIL"
+	#configure_to_create_in_temp_folder
+	rm -fr $HOME/.gnupg
+	create_keys
+	list_gpg2_keys
+	store_keys
+}
+
+function init_pass_store(){
+	EMAIL=$(gpg2 --list-keys | grep uid | awk '{print $5}' | tr -d '<>')
+	if [ ! -f ".devcontainer/.store/.gpg-id" ];then
+		pass init $EMAIL
 	fi
 }
 
