@@ -1,0 +1,29 @@
+---
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.2.0
+      hooks:
+          - id: check-merge-conflict
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-json
+            exclude: (.vscode|.devcontainer)
+          - id: check-yaml
+          - id: detect-private-key
+          - id: check-added-large-files
+            args: ['--maxkb=950']
+
+    - repo: https://github.com/gitguardian/gg-shield
+      rev: v1.11.0
+      hooks:
+          - id: ggshield
+            language_version: python3
+            stages: [commit]
+
+    - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+      rev: v8.0.0
+      hooks:
+          - id: commitlint
+            args: [--config=/workspaces/shift-left/.commitlintrc.yml]
+            stages: [commit-msg]
+            additional_dependencies: ['@commitlint/config-conventional']
