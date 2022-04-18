@@ -37,7 +37,7 @@ ENV AWS_VAULT_VERSION=v6.6.0
 RUN set -ex \
     && curl -L -o /usr/local/bin/aws-vault \
         https://${AWS_VAULT_URL}/${AWS_VAULT_VERSION}/aws-vault-linux-amd64 \
-    && chmod 755 /usr/local/bin/aws-vault 
+    && chmod 755 /usr/local/bin/aws-vault
 
 # oh-my-zsh plugins
 # 	zsh-autosuggestions - suggests commands as you type based on history and completions

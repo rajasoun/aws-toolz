@@ -1,4 +1,4 @@
 aws-audit==0.1.0
 pre-commit==2.17.0
 commitizen==2.21.2
-# python-dotenv[cli]==0.20.0
+python-dotenv[cli]==0.20.0

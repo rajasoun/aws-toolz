@@ -6,7 +6,7 @@ function add_profile_to_aws_vault(){
         read -r -p 'Add Profile to aws-vault (y/n)? ' choice
         case "$choice" in
         n|N) break;;
-        y|Y) 
+        y|Y)
             read -r -p 'AWS Profile Name : ' profile
             aws-vault add $profile;;
         *) echo 'Response not valid';;
@@ -24,7 +24,7 @@ function aws_vault_exec() {
     echo -e "You must have AWS profiles set up to use this.\nSee https://github.com/99designs/aws-vault/\n"
     add_profile_to_aws_vault
     return 1
-  fi 
+  fi
 
   local list=$(grep '^[[]profile' <~/.aws/config | awk '{print $2}' | sed 's/]$//')
   if [[ -z $list ]]; then
@@ -32,7 +32,7 @@ function aws_vault_exec() {
     add_profile_to_aws_vault
     return 1
   fi
-  
+
   local nlist=$(echo "$list" | nl)
   while [[ -z $AWS_PROFILE ]]; do
       local AWS_PROFILE=$(read -p "AWS profile? `echo $'\n\r'`$nlist `echo $'\n> '`" N; echo "$list" | sed -n ${N}p)

@@ -1,4 +1,4 @@
-# AWS Scanners 
+# AWS Scanners
 
 Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
@@ -10,7 +10,7 @@ $ .devcontainer/dotfiles/generate_git_config.sh
 $ make -f .devcontainer/Makefile prerequisite
 ```
 
-## awsaudit 
+## awsaudit
 
 AWS Audit is a command line utility that will help end-user/application owner to audit the AWS services from the security perspective.
 
@@ -47,7 +47,7 @@ $ ./setup.sh
 
 Run the utility using below command
 ```sh
-$ ./prowler.sh 
+$ ./prowler.sh
 ```
 
 Reference: https://github.com/toniblyx/prowler

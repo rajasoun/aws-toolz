@@ -35,8 +35,5 @@ if [ ! -f .devcontainer/dotfiles/.gitconfig ];then
   file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
   printf "Email : "
   read -r "EMAIL"
-  file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig" 
+  file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
 fi
-
-
-

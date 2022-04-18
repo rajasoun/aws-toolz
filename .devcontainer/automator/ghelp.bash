@@ -85,16 +85,15 @@ function _install_git_hooks() {
 	pre-commit install --config /workspaces/shift-left/.pre-commit-config.yaml
 	# pre-commit install-hooks --config /workspaces/shift-left/.pre-commit-config.yaml
 	pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files
-	rm -fr $(git rev-parse --show-toplevel)/.husky
-	cp -R /workspaces/husky $(git rev-parse --show-toplevel)/.husky
-	husky install
+	# rm -fr $(git rev-parse --show-toplevel)/.husky
+	# cp -R /workspaces/husky $(git rev-parse --show-toplevel)/.husky
+	# husky install
 }
 
 function _check_gg_api() {
 	prompt "Checking Git Guardian API Validity"
 	# shellcheck source=/dev/null
-	source ".env"
-	curl -H "Authorization: Token ${GITGUARDIAN_API_KEY}" "${GITGUARDIAN_API_URL}/v1/health"
+	curl -H "Authorization: Token $(dotenv get GITGUARDIAN_API_KEY)" "$(dotenv get GITGUARDIAN_API_URL)/v1/health"
 	prompt ""
 }
 
@@ -237,8 +236,6 @@ function integrity(){
 	sha256sum=$(find \
 		"/workspaces/automator/"  \
 		"/workspaces/shift-left/" \
-		"/workspaces/shift-left" \
-		"/workspaces/husky" \
 		"/workspaces/tests" \
 		"/opt/version.txt" \
 		-type f -print0 \
@@ -310,4 +307,4 @@ init_debug
 EXIT_CODE="$?"
 log_sentry "$EXIT_CODE" "DevContainer Initialization"
 check_git_config
-check_hooks_config
+#check_hooks_config

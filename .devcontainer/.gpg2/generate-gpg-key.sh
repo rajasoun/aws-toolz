@@ -5,7 +5,7 @@ read -r "CN"
 printf "Email : "
 read -r "EMAIL"
 
-# Set GNUPGHOME to create gpg keys in temp foleder 
+# Set GNUPGHOME to create gpg keys in temp foleder
 function configure_to_create_in_temp_folder(){
     GNUPGHOME="$(mktemp -d)"
     export GNUPGHOME
@@ -43,4 +43,3 @@ rm -fr $HOME/.gnupg
 create_keys
 list_gpg2_keys
 store_keys
-
