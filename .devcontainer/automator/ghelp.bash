@@ -42,6 +42,7 @@ infra-test	 - 	Run End to End Test on Devcontainer Infrastructure
 code-churn	 - 	Frequency of change to code base
 pretty		 - 	Code prettier
 precommit	 - 	Run Pre-commit checks on all Files
+aws-env		 -  Wrapper to aws-vault. CMD to execute is optional
 ci-cd		 - 	CI/CD for Devcontainer
 alias		 - 	List all Alias
 - - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - - -
@@ -357,7 +358,7 @@ alias grelease="_git_tag"
 alias pretty="npx prettier --config /workspaces/shift-left/.prettierrc.yml --write ."
 alias precommit="pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files"
 alias infra-test='/workspaces/tests/system/e2e_tests.sh'
-alias aws-vault-env=".devcontainer/.aws/aws_vault_env.sh"
+alias aws-env=".devcontainer/.aws/aws_vault_env.sh"
 
 # For Sentry
 alias init-debug='init_debug'
