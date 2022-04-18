@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+if [ -d "/workspaces" ];then
+	SCRIPT_DIR="/workspaces"
+else
+	SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.devcontainer/"
+fi
+
+SCRIPT_PATH="$SCRIPT_DIR/automator/src/lib/os.sh"
+# shellcheck source=/dev/null
+source "$SCRIPT_PATH"
+
 function add_profile_to_aws_vault(){
     while true
     do
@@ -40,8 +50,14 @@ function aws_vault_exec() {
   aws-vault list | awk '{print $2}' | grep -c "$AWS_PROFILE" >/dev/null 2>&1 && \
     (echo -e "\n✅ AWS Profile $AWS_PROFILE") || \
     (echo -e "\n💣 Missing Credentials For $AWS_PROFILE \n";aws-vault add $AWS_PROFILE)
-  echo AWS Profile: $AWS_PROFILE. CTRL-D to exit.
   AWS_VAULT=
-  aws-vault exec $AWS_PROFILE --no-session --
+  CMD="$@"
+  if [ -z "$CMD" ];then
+    echo AWS Profile: $AWS_PROFILE. CTRL-D to exit.
+    aws-vault exec $AWS_PROFILE --no-session --
+  else
+    echo -e "\n${BOLD}${GREEN}Executing $CMD ${NC}\n"
+    aws-vault exec $AWS_PROFILE --no-session -- $CMD
+  fi
 }
-aws_vault_exec
+aws_vault_exec "$@"

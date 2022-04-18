@@ -12,7 +12,7 @@ $ make -f .devcontainer/Makefile prerequisite
 
 From Visual Studio Code - Dev Container Terminal Window.
 ```sh
-$ make -f .devcontainer/Makefile prerequisite
+$ ci-cd prerequisite
 ```
 
 ## awsaudit
@@ -24,14 +24,20 @@ Features of the AWS Audit:
 * Generate report in excel
 * No additional setup is required
 
-Configure the utility using below command
+Select the AWS Profile for AWS Audit
 ```sh
-$ awsaudit --configure
+$ aws-vault-env
 ```
 
 Run the utility using below command
 ```sh
 $ awsaudit
+```
+
+Or Non Interactively
+```sh
+$ $AWS_PROFILE=
+$ aws-vault exec $AWS_PROFILE --no-session -- awsaudit
 ```
 
 Reference: https://pypi.org/project/aws-audit/
