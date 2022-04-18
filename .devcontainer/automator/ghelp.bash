@@ -272,7 +272,7 @@ function check_integrity(){
 #-------------------------------------------------------------
 alias gss="git status -s"
 alias gaa="git add --all"
-alias gc="git commit"
+alias gc="cz commit"
 alias gp="git_push"
 alias gclean="git fetch --prune origin && git gc"
 alias glogin="git_hub_login $@"
