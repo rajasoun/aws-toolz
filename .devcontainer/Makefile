@@ -33,7 +33,7 @@ prerequisite: ## Pre-Requisite Checks
 	@ls -asl .devcontainer/dotfiles/.gitconfig >/dev/null 2>&1 && (echo "✅ .gitconfig File") || (echo  "❌ .gitconfig File. Execute -> .devcontainer/dotfiles/generate_git_config.sh")
 	@ls -asl .devcontainer/.gpg2/private.key >/dev/null 2>&1 && (echo "✅ gpg2 config") || (echo  "❌ gpg2 config. Execute -> .devcontainer/.gpg2/generate-gpg-key.sh")
 	@ls -asl .devcontainer/.store/.gpg-id >/dev/null 2>&1 && (echo "✅ password-store config") || (echo  "❌ password-store config. Execute -> .devcontainer/.store/initialize_store.sh")
-	@ls -asl .devcontainer/.aws/config >/dev/null 2>&1 && (echo "✅ aws config") || (echo  "❌ aws config. Execute -> ???")
+	@ls -asl .devcontainer/.aws/config >/dev/null 2>&1 && (echo "✅ aws config") || (echo  "❌ aws config. Execute -> .devcontainer/.aws/aws_vault_env.sh")
 	@ls -asl .ssh >/dev/null 2>&1 && (echo "✅ .ssh Folder") || (echo  "❌ .ssh Folder")
 	@echo ""
 
@@ -66,7 +66,7 @@ git:  ## Rebase latest version details, tag release and do checkin
 	@echo "$(VERSION)" >.devcontainer/version.txt
 	@echo "FROM $(IMAGE_NAME):$(VERSION)" >.devcontainer/prebuild/Dockerfile.prebuilt
 	git add .devcontainer/version.txt .devcontainer/prebuild/Dockerfile.prebuilt
-	HUSKY=0 git commit -m "ci(devcontainer): new version - $(VERSION)" --no-verify
+	git commit -m "ci(devcontainer): new version - $(VERSION)" --no-verify
 	git push --no-verify
 	git fetch --prune --tags
 	git tag -a "$(VERSION)" -m "Dev Container new Build $(VERSION)"

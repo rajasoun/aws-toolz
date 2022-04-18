@@ -286,6 +286,7 @@ alias grelease="_git_tag"
 alias pretty="npx prettier --config /workspaces/shift-left/.prettierrc.yml --write ."
 alias precommit="pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files"
 alias infra-test='/workspaces/tests/system/e2e_tests.sh'
+alias aws-vault-env=".devcontainer/.aws/aws_vault_env.sh"
 
 # For Sentry
 alias init-debug='init_debug'
