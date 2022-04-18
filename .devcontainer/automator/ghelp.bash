@@ -328,3 +328,5 @@ EXIT_CODE="$?"
 log_sentry "$EXIT_CODE" "DevContainer Initialization"
 check_git_config
 #check_hooks_config
+
+export PRE_COMMIT_ALLOW_NO_CONFIG=1
