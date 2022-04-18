@@ -37,6 +37,9 @@ function aws_vault_exec() {
   while [[ -z $AWS_PROFILE ]]; do
       local AWS_PROFILE=$(read -p "AWS profile? `echo $'\n\r'`$nlist `echo $'\n> '`" N; echo "$list" | sed -n ${N}p)
   done
+  aws-vault list | awk '{print $2}' | grep -c "$AWS_PROFILE" >/dev/null 2>&1 && \
+    (echo -e "\n✅ AWS Profile $AWS_PROFILE") || \
+    (echo -e "\n💣 Missing Credentials For $AWS_PROFILE \n";aws-vault add $AWS_PROFILE)
   echo AWS Profile: $AWS_PROFILE. CTRL-D to exit.
   AWS_VAULT=
   aws-vault exec $AWS_PROFILE --no-session --
