@@ -289,4 +289,3 @@ $RECYCLE.BIN/
 .dockerhub.token
 .cache_ggshield
 !.devcontainer/automator/src/lib
-.ssh
