@@ -106,5 +106,6 @@ DISABLE_UPDATE_PROMPT=true
 export AWS_VAULT_PASS_PREFIX=aws-vault
 export AWS_VAULT_BACKEND=pass
 export GPG_TTY="$(tty)"
+export PRE_COMMIT_ALLOW_NO_CONFIG=1
 
 source /workspaces/automator/ghelp.bash
