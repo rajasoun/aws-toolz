@@ -10,6 +10,11 @@ $ .devcontainer/dotfiles/generate_git_config.sh
 $ make -f .devcontainer/Makefile prerequisite
 ```
 
+From Visual Studio Code - Dev Container Terminal Window.
+```sh
+$ make -f .devcontainer/Makefile prerequisite
+```
+
 ## awsaudit
 
 AWS Audit is a command line utility that will help end-user/application owner to audit the AWS services from the security perspective.

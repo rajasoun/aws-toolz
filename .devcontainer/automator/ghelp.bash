@@ -273,16 +273,16 @@ function check_integrity(){
 
 function generate_git_config(){
 	if [ ! -f .devcontainer/dotfiles/.gitconfig ];then
-	cp .devcontainer/dotfiles/.gitconfig.sample .devcontainer/dotfiles/.gitconfig
-	echo -e "${GREEN}Generating .gitconfig${NC}\n"
-	printf "User Name : "
-	read -r "USER_NAME"
-	_file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
-	printf "Email : "
-	read -r "EMAIL"
-	_file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
+		cp .devcontainer/dotfiles/.gitconfig.sample .devcontainer/dotfiles/.gitconfig
+		echo -e "${GREEN}Generating .gitconfig${NC}\n"
+		printf "User Name : "
+		read -r "USER_NAME"
+		_file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
+		printf "Email : "
+		read -r "EMAIL"
+		_file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
 	else
-	echo -e "${YELLOW}\nAborting Generation.\n .devcontainer/dotfiles/.gitconfig Exists${NC}"
+		echo -e "${YELLOW}\nAborting Generation.\n .devcontainer/dotfiles/.gitconfig Exists${NC}"
 	fi
 }
 
