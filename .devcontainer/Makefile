@@ -9,7 +9,7 @@ RESET :=$(shell tput sgr0)
 NAME := $(shell basename $(PWD))
 LIST_TAGS := $(shell git tag -l)
 IMAGE_NAME=rajasoun/$(NAME)
-VERSION := $(shell [ "${LIST_TAGS}" ] && echo "$(git describe --tags --abbrev=0 >/dev/null 2>&1)" ||  echo 1.0.0 )
+VERSION := $(shell [ "${LIST_TAGS}" ] && echo "$(shell git describe --tags --abbrev=0)" ||  echo 1.0.0 )
 
 # HELP
 # This will output the help for each task
