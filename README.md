@@ -1,6 +1,6 @@
 # AWS Scanners 
 
-Assembly of Opensource Tools for Auditing and Budget for AWS Accounts
+Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
 ## Initial Setup
 
