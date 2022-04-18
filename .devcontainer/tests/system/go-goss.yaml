@@ -1,0 +1,21 @@
+---
+# goss --gossfile .devcontainer/go-goss.yaml validate
+command:
+  goss --version:
+    exit-status: 0
+    stdout:
+      - v0.3.16
+    stderr: []
+    timeout: 0
+  node --version:
+    exit-status: 0
+    stdout:
+      - v16.14.2
+    stderr: []
+    timeout: 0
+  gh --version:
+    exit-status: 0
+    stdout:
+      - 2.8.0
+    stderr: []
+    timeout: 0

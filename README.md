@@ -6,6 +6,7 @@ Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
 From Terminal Window.
 ```sh
+$ .devcontainer/dotfiles/generate_git_config.sh
 $ make -f .devcontainer/Makefile prerequisite
 ```
 
