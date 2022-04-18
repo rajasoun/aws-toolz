@@ -49,8 +49,7 @@ function check_and_make_first_release_if_not_done(){
             make -f .devcontainer/Makefile push
         fi
         echo "$VERSION" >.devcontainer/version.txt
-        echo "FROM $name:$VERSION" >.devcontainer/prebuild/Dockerfile.prebuilt
-        git add .devcontainer/version.txt .devcontainer/prebuild/Dockerfile.prebuilt
+        git add .devcontainer/version.txt
         git commit -m "ci(devcontainer): new version - $VERSION"
         git push --no-verify
         git fetch --prune --tags
@@ -62,7 +61,7 @@ function check_and_make_first_release_if_not_done(){
 # copy from -> to if not present
 function copy_ssh_config_dir(){
     FROM="${HOME}/.ssh"
-    TO="${PWD}/.ssh"
+    TO="${PWD}/.devcontainer/.ssh"
 
     if [  ! -d "$TO"  ];then
         echo -e "${BOLD}Copy $FROM to Current Directory${NC}"
@@ -76,7 +75,7 @@ function copy_ssh_config_dir(){
 # copy from -> to if not present
 function copy_git_config_file(){
     FROM="${HOME}/.gitconfig"
-    TO="${PWD}/.gitconfig"
+    TO="${PWD}/.devcontainer/dotfiles/.gitconfig"
 
     if [  ! -f "$TO"  ];then
         echo -e "${BOLD}Copy $FROM to Current Directory${NC}"
@@ -97,8 +96,11 @@ function launch(){
             -a STDOUT -a STDERR \
             --entrypoint=/bin/zsh \
             --user vscode  \
-            --mount type=bind,source="${PWD}/.gitconfig",target="/home/vscode/.gitconfig",consistency=cached \
-            --mount type=bind,source="${PWD}/.ssh",target="/home/vscode/.ssh",consistency=cached \
+            --mount type=bind,source="${PWD}/.devcontainer/dotfiles/.gitconfig",target="/home/vscode/.gitconfig",consistency=cached \
+            --mount type=bind,source="${PWD}/.devcontainer/.ssh",target="/home/vscode/.ssh",consistency=cached \
+            --mount type=bind,source="${PWD}/.devcontainer/.gpg2",target="/home/vscode/.gnupg",consistency=cached \
+            --mount type=bind,source="${PWD}/.devcontainer/.store",target="/home/vscode/.password-store",consistency=cached \
+            --mount type=bind,source="${PWD}/.devcontainer/.aws",target="/home/vscode/.aws",consistency=cached \
             --mount type=bind,source="${PWD}",target="/workspaces/$GIT_REPO_NAME",consistency=cached \
             --mount source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind \
             --mount type=volume,src=vscode,dst=/vscode -l vsch.local.folder="${PWD}" \

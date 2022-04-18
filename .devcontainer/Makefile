@@ -26,7 +26,6 @@ help: ## This help.
 
 prerequisite: ## Pre-Requisite Checks
 	@echo "$(GREEN)\nTools PreRequisite Checks $(RESET)"
-	@code --version >/dev/null 2>&1 && (echo "✅ Visual Studio Code") || (echo  "❌ Visual Studio Code")
 	@make --version >/dev/null 2>&1 && (echo "✅ make") || (echo  "❌ make")
 	@echo ""
 	@echo "$(GREEN)\nConfigs PreRequisite Checks $(RESET)"
@@ -34,7 +33,7 @@ prerequisite: ## Pre-Requisite Checks
 	@ls -asl .devcontainer/.gpg2/private.key >/dev/null 2>&1 && (echo "✅ gpg2 config") || (echo  "❌ gpg2 config. Execute -> generate_gpg_keys")
 	@ls -asl .devcontainer/.store/.gpg-id >/dev/null 2>&1 && (echo "✅ password-store config") || (echo  "❌ password-store config. Execute -> init_pass_store")
 	@ls -asl .devcontainer/.aws/config >/dev/null 2>&1 && (echo "✅ aws config") || (echo  "❌ aws config. Execute -> .devcontainer/.aws/aws_vault_env.sh")
-	@ls -asl .ssh >/dev/null 2>&1 && (echo "✅ .ssh Folder") || (echo  "❌ .ssh Folder")
+	@ls -asl .devcontainer/.ssh >/dev/null 2>&1 && (echo "✅ .ssh Folder") || (echo  "❌ .ssh Folder")
 	@echo ""
 
 login: ## Login To Docker
@@ -64,7 +63,7 @@ git:  ## Rebase latest version details, tag release and do checkin
 	@echo "$(BOLD)$(YELLOW)Git updates - $(IMAGE_NAME):$(VERSION) $(RESET)"
 	$(eval VERSION=$(shell echo $(VERSION) | awk -F. '{OFS="."; $$NF+=1; print $0}'))
 	@echo "$(VERSION)" >.devcontainer/version.txt
-	git add .devcontainer/version.txt 
+	git add .devcontainer/version.txt
 	git commit -m "ci(devcontainer): new version - $(VERSION)" --no-verify
 	git push --no-verify
 	git fetch --prune --tags
