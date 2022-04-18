@@ -64,8 +64,7 @@ git:  ## Rebase latest version details, tag release and do checkin
 	@echo "$(BOLD)$(YELLOW)Git updates - $(IMAGE_NAME):$(VERSION) $(RESET)"
 	$(eval VERSION=$(shell echo $(VERSION) | awk -F. '{OFS="."; $$NF+=1; print $0}'))
 	@echo "$(VERSION)" >.devcontainer/version.txt
-	@echo "FROM $(IMAGE_NAME):$(VERSION)" >.devcontainer/prebuild/Dockerfile.prebuilt
-	git add .devcontainer/version.txt .devcontainer/prebuild/Dockerfile.prebuilt
+	git add .devcontainer/version.txt 
 	git commit -m "ci(devcontainer): new version - $(VERSION)" --no-verify
 	git push --no-verify
 	git fetch --prune --tags
