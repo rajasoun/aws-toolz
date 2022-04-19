@@ -62,9 +62,6 @@ RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUGIN_
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGIN_FOLDER"/zsh-autosuggestions
 COPY dotfiles/.zshrc /home/$USERNAME/
 
-# Copy .gitconfig
-COPY dotfiles/.gitconfig /home/$USERNAME/
-
 # Copy shift-left files
 COPY shift-left /workspaces/shift-left
 COPY tests      /workspaces/tests

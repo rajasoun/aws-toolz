@@ -210,15 +210,21 @@ function _backup_remove_git_config() {
 
 function _git_config() {
   _backup_remove_git_config
-  if [[ "$USER" == "vscode" ]]; then
-    echo "Executing Inside Dev Container. Getting User"
-    MSG="${GREEN} User ${NC}${ORANGE}(without eMail) : ${NC}"
+  if [ ! -f .devcontainer/dotfiles/.gitconfig ];then
+    echo "Executing Inside Dev Container."
+    cp .devcontainer/dotfiles/.gitconfig.sample .devcontainer/dotfiles/.gitconfig
+	  echo -e "${GREEN}Generating .gitconfig${NC}\n"
+    MSG="${GREEN} Full Name ${NC}${ORANGE}(without eMail) : ${NC}"
     # read -r -p "$MSG" USER_NAME
     read -r "USER_NAME?$MSG"
+    _file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
     MSG="${GREEN} EMail ${NC}${ORANGE} : ${NC}"
     # read -r -p "$MSG" USER_NAME
     read -r "EMAIL?$MSG"
-  fi
+    _file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
+	else
+		echo -e "${YELLOW}\nAborting Generation.\n .devcontainer/dotfiles/.gitconfig Exists${NC}"
+	fi
   if [ -n "$USER_NAME" ]; then
     echo "Configuring Git"
     git config --global user.name "${USER_NAME}"

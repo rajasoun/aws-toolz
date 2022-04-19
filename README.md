@@ -6,7 +6,6 @@ Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
 From Terminal Window.
 ```sh
-$ .devcontainer/ci-shell.sh
 $ ci-cd prerequisite
 ```
 

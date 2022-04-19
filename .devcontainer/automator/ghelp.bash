@@ -272,21 +272,6 @@ function check_integrity(){
 	fi
 }
 
-function generate_git_config(){
-	if [ ! -f .devcontainer/dotfiles/.gitconfig ];then
-		cp .devcontainer/dotfiles/.gitconfig.sample .devcontainer/dotfiles/.gitconfig
-		echo -e "${GREEN}Generating .gitconfig${NC}\n"
-		printf "User Name : "
-		read -r "USER_NAME"
-		_file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
-		printf "Email : "
-		read -r "EMAIL"
-		_file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
-	else
-		echo -e "${YELLOW}\nAborting Generation.\n .devcontainer/dotfiles/.gitconfig Exists${NC}"
-	fi
-}
-
 # Set GNUPGHOME to create gpg keys in temp foleder
 function configure_to_create_in_temp_folder(){
     GNUPGHOME="$(mktemp -d)"
@@ -295,6 +280,9 @@ function configure_to_create_in_temp_folder(){
 }
 
 function create_keys(){
+	check_git_config
+	CN=$(git config user.name)
+	EMAIL=$(git config user.name)
     gpg2 --full-generate-key --batch  <<EOF
 %echo Generating a GPG key
 Key-Type: RSA
@@ -321,10 +309,10 @@ function list_gpg2_keys(){
 }
 
 function generate_gpg_keys(){
-	printf "User Name : "
-	read -r "CN"
-	printf "Email : "
-	read -r "EMAIL"
+	# printf "User Name : "
+	# read -r "CN"
+	# printf "Email : "
+	# read -r "EMAIL"
 	#configure_to_create_in_temp_folder
 	rm -fr $HOME/.gnupg
 	create_keys
