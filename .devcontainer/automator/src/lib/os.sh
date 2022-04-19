@@ -278,7 +278,7 @@ function git-ssh-fix() {
   MSG="$ERROR_MSG \n $NEXT_STEP"
   [[ ! -f "$PRIVATE_KEY" ]] && echo -e "$MSG" && return 1
   # Check In Terminal
-  # ssh-add -l > /dev/null || (eval $(ssh-agent -s) && ssh-add $PRIVATE_KEY)
+  ssh-add -l > /dev/null || (eval $(ssh-agent -s) && ssh-add $PRIVATE_KEY)
   echo "${BOLD}Git SSH Hack Fix${NC}"
   # check if ssh key is already added
   ssh-add -l >/dev/null || echo "SSH Key "
