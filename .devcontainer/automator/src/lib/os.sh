@@ -139,12 +139,12 @@ function _debug_option() {
 # Check Connection
 function _check_connection() {
   server=$1
-  port=$1
+  port=$2
   if nc -z "$server" "$port" 2>/dev/null; then
-    echo "$server on $port ✓"
+    echo -e "${GREEN}Internet Connection $server  ✓${NC}\n"
     return 0
   else
-    echo "$server on $port  ✗"
+    echo -e "${RED}Internet Connection $server  ✗${NC}\n"
     return 1
   fi
 }
@@ -161,7 +161,7 @@ function _copy_to_clipboard() {
       debug "$MSG"
     fi
     ;;
-  Darwin)
+  *darwin* | *Darwin*)
     os="$(uname -s)"
     pbcopy <"$CONTENT"
     MSG="Copied content To macOS Clipboard"
@@ -177,13 +177,13 @@ function _copy_to_clipboard() {
     debug "$MSG"
     ;;
   esac
-  echo -e "${GREEN}$MSG${NC}\n"
+  echo -e "\n${GREEN}$MSG${NC}\n"
 }
 
 # Prompt to User for Continue or Exit
 function _prompt_confirm() {
   # call with a prompt string or use a default
-  local response msg="${1:-Do you want to continue} (y/[n])? "
+  local response msg="${1:-${ORANGE}Do you want to continue${NC}} (y/[n])? "
   shift
   read -r "$@" -p "$msg" response || echo
   case "$response" in
@@ -191,7 +191,7 @@ function _prompt_confirm() {
     return 0
     ;;
   [nN][no][No] | [nN])
-    echo "Exiting setup"
+    echo -e "${BOLD}${RED}Exiting setup${NC}\n"
     exit 1
     ;;
   *)
@@ -213,31 +213,25 @@ function _git_config() {
   #_backup_remove_git_config
   if [ ! -f $GIT_CONFIG_FILE ];then
     cp .devcontainer/dotfiles/.gitconfig.sample $GIT_CONFIG_FILE
-	  echo -e "${GREEN}Generating .gitconfig${NC}\n"
-    MSG="${GREEN} Full Name ${NC}${ORANGE}(without eMail) : ${NC}"
+	  echo -e "${GREEN}${UNDERLINE}Generating .gitconfig${NC}\n"
+    MSG="${ORANGE}  Full Name ${NC}${ORANGE}(without eMail) : ${NC}"
     printf "$MSG"
     read -r "USER_NAME"
     _file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
-    MSG="${GREEN} EMail ${NC}${ORANGE} : ${NC}"
+    MSG="${ORANGE}  EMail ${NC}${ORANGE} : ${NC}"
     printf "$MSG"
     read -r "EMAIL"
     _file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
+    echo -e "\nGit Config Gneration for $USER_NAME Done !!!"
 	else
-		echo -e "${ORANGE}\n .devcontainer/dotfiles/.gitconfig Exists\n${NC}"
+		echo -e "${ORANGE}\n.devcontainer/dotfiles/.gitconfig Exists${NC}"
 	fi
-  if [ -n "$USER_NAME" ]; then
-    echo "Configuring Git"
-    git config --global user.name "${USER_NAME}"
-    git config --global user.email "${EMAIL}"
-    git config --global core.editor "code"
-  fi
-  # debug "$(cat "$GIT_CONFIG_FILE")"
-  echo "Git Config for $USER_NAME Done !!!"
+  
 }
 
 function _generate_ssh_keys() {
   if [ ! -f $PUBLIC_KEY  ];then
-    echo "Generating SSH Keys for $USER_NAME"
+    echo -e "${GREEN}${UNDERLINE}\nGenerating SSH Keys for $USER_NAME${NC}\n"
     _is_command_found ssh-keygen
     debug "Generating SSH Keys for $USER_NAME"
     ssh-keygen -q -t rsa -N '' -f "$PRIVATE_KEY" -C "$EMAIL" <<<y 2>&1 >/dev/null
@@ -247,8 +241,15 @@ function _generate_ssh_keys() {
     chmod 400 "$PUBLIC_KEY"
     chmod 400 "$PRIVATE_KEY"
     debug "SSH Keys Generated Successfully"
+    _copy_to_clipboard "$PUBLIC_KEY"
+    _print_details
+    GIT=$(dotenv get GITHUB_URL)
+    _check_connection "$GIT" 443
+    _prompt_confirm "Is SSH Public Added to GitHub"
+    git-ssh-fix
+    ssh -T git@$(dotenv get GITHUB_URL)
   else 
-    echo -e "SSH Keys Exist"
+    echo -e "${ORANGE}SSH Keys Exist\n${NC}"
   fi
 }
 
@@ -259,10 +260,7 @@ function _print_details() {
   debug "$(cat "$PUBLIC_KEY")"
   debug "======= END PUBLIC KEY ========="
 
-  echo "GoTo:"
-  echo ""
-  echo "https://$GIT/settings/ssh/new"
-  echo ""
+  echo -e "${BOLD}GoTo${NC}: ${ORANGE}https://$GIT/settings/ssh/new\n${NC}"
 }
 
 function _configure_ssh_gitconfig() {
@@ -271,13 +269,6 @@ function _configure_ssh_gitconfig() {
 
   debug "SSH Key Gneration"
   _generate_ssh_keys
-
-  echo "Copying SSH Public Key to Clipboard"
-  _copy_to_clipboard "$PUBLIC_KEY"
-  _print_details
-  GIT=$(dotenv get GITHUB_URL)
-  _check_connection "$GIT" 
-  _prompt_confirm "Is SSH Public Added to GitHub"
 }
 
 # ToDo: Technical Debt : Git SSH Fix : Priority P3

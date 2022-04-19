@@ -86,9 +86,8 @@ function launch(){
             "$name:$VERSION"
 }
 
-echo -e "SSH & Git Configurations"
+echo -e "\n${BOLD}${UNDERLINE}SSH & Git Configurations${NC}"
 _configure_ssh_gitconfig
-echo -e "\n"
 make -f .devcontainer/Makefile prerequisite
 
 check_and_make_first_release_if_not_done

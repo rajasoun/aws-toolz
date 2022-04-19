@@ -7,3 +7,6 @@
 [alias]
     # based on "buggyfiles" above and https://github.com/cypher/dotfiles/blob/master/bin/git-churn
     churn = !git log -M -C --name-only --format=\"format:%n\" | grep . | sort | uniq -c | sort -n
+
+[core]
+	editor = code
