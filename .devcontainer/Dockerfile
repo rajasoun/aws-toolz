@@ -38,20 +38,10 @@ RUN set -ex \
     && curl -L -o /usr/local/bin/aws-vault \
         https://${AWS_VAULT_URL}/${AWS_VAULT_VERSION}/aws-vault-linux-amd64 \
     && chmod 755 /usr/local/bin/aws-vault
-# goss - Quick and Easy server validation
-RUN set -ex \
-    && curl -fsSL https://goss.rocks/install | sh
 
 # Sentry CLI
 RUN set -ex \
     && curl -fsSL https://sentry.io/get-cli/ | bash
-
-# syft & grype support
-ENV SYFT_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/syft/main/install.sh"
-ENV GRYPE_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/grype/main/install.sh"
-RUN set -ex \
-    && curl -sSfL "$SYFT_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin \
-    && curl -sSfL "$GRYPE_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin
 
 # oh-my-zsh plugins
 # 	zsh-autosuggestions - suggests commands as you type based on history and completions

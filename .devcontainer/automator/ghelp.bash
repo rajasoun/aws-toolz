@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
+
 if [ -d "/workspaces" ];then
+	# Within DevContainer
 	SCRIPT_DIR="/workspaces"
 else
+	# Within Host
 	SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.devcontainer/"
 fi
 
@@ -68,37 +71,19 @@ function _git_tag() {
 	fi
 }
 
-function _teardown_git_flow() {
-	git config --remove-section "gitflow.path"
-	git config --remove-section "gitflow.prefix"
-	git config --remove-section "gitflow.branch"
-}
-
-function _init_git_flow() {
-	if (git flow config >/dev/null 2>&1); then
-		prompt "Git Flow Already Initialized..."
-	else
-		prompt "Git Flow Not Initialized. Initializing..."
-		git flow init -fd
-	fi
-}
-
 function _install_git_hooks() {
 	prompt "Git Repository..."
 	prompt "Installing Git Hooks"
 	git config --unset-all core.hooksPath
 	pre-commit install --config /workspaces/shift-left/.pre-commit-config.yaml
-	#pre-commit install-hooks --config /workspaces/shift-left/.pre-commit-config.yaml
 	run_pre_commit
-	# rm -fr $(git rev-parse --show-toplevel)/.husky
-	# cp -R /workspaces/husky $(git rev-parse --show-toplevel)/.husky
-	# husky install
 }
 
 function _check_gg_api() {
 	prompt "Checking Git Guardian API Validity"
 	# shellcheck source=/dev/null
-	curl -H "Authorization: Token $(dotenv get GITGUARDIAN_API_KEY)" "$(dotenv get GITGUARDIAN_API_URL)/v1/health"
+	curl -H "Authorization: Token $(dotenv get GITGUARDIAN_API_KEY)" \
+		"$(dotenv get GITGUARDIAN_API_URL)/v1/health"
 	prompt ""
 }
 
@@ -141,7 +126,6 @@ function gsetup() {
 			cp .env .env.bak
 			_install_git_hooks || prompt "_install_git_hooks ❌"
 			_populate_dot_env || prompt "_populate_dot_env ❌"
-			_init_git_flow || prompt "_init_git_flow ❌ [Proceeding...]"
 			end=$(date +%s)
 			runtime=$((end - start))
 			prompt "gsetup DONE in $(_display_time $runtime)"
@@ -161,23 +145,6 @@ function release_dev_container(){
 }
 
 # Gits Churn -  "frequency of change to code base"
-#
-# $ ./git-churn.bash
-# 30 src/multipass/actions.bash
-# 38 test/test_integration.bats
-# 97 .github/workflows/pipeline.yml
-#
-# This means that
-# actions.bash has changed 30 times.
-# pipeline.yml has changed 97 times.
-#
-# Show churn for specific directories:
-#   $ $ ./git-churn.bash src
-#
-# Show churn for a time range:
-#   $ $ ./git-churn.bash --since='1 month ago'
-#
-# All standard arguments to git log are applicable
 function code_churn() {
 	git log --all -M -C --name-only --format='format:' "$@" | sort | grep -v '^$' | uniq -c | sort -n
 }
@@ -197,16 +164,6 @@ function check_git_config() {
 	else
 		log_sentry "0" "git config "
 	fi
-}
-
-function check_hooks_config() {
-	#if [ ! -f "$(git rev-parse --show-toplevel)/.husky" ]; then
-		rm -fr $(git rev-parse --show-toplevel)/.husky
-		cp -R /workspaces/husky $(git rev-parse --show-toplevel)/.husky
-		husky install
-		EXIT_CODE="$?"
-		log_sentry "$EXIT_CODE" "Git Hooks Config Check"
-	#fi
 }
 
 function git_hub_login() {
@@ -279,7 +236,7 @@ function configure_to_create_in_temp_folder(){
     echo "GNUPGHOME=$GNUPGHOME"
 }
 
-function create_keys(){
+function create_gpg_keys(){
 	check_git_config
 	CN=$(git config user.name)
 	EMAIL=$(git config user.name)
@@ -299,24 +256,19 @@ Expire-Date: 1y
 EOF
 }
 
-function store_keys(){
+function store_gpg_keys(){
     gpg2 --export -a "$EMAIL" > .devcontainer/.gpg2/public.key
     gpg2 --export-secret-keys --armor > .devcontainer/.gpg2/private.key
 }
 
-function list_gpg2_keys(){
+function list_gpg_keys(){
     gpg2 --list-keys
 }
 
 function generate_gpg_keys(){
-	# printf "User Name : "
-	# read -r "CN"
-	# printf "Email : "
-	# read -r "EMAIL"
-	#configure_to_create_in_temp_folder
 	rm -fr $HOME/.gnupg
-	create_keys
-	list_gpg2_keys
+	create_gpg_keys
+	list_gpg_keys
 	store_keys
 }
 
@@ -362,12 +314,10 @@ if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
 	gsetup
 fi
 
-#git-ssh-fix
 git_hub_login token
 init_debug
 EXIT_CODE="$?"
 log_sentry "$EXIT_CODE" "DevContainer Initialization"
 check_git_config
-#check_hooks_config
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
