@@ -75,7 +75,7 @@ function launch(){
             --user vscode  \
             --mount type=bind,source="${PWD}/.devcontainer/dotfiles/.gitconfig",target="/home/vscode/.gitconfig",consistency=cached \
             --mount type=bind,source="${PWD}/.devcontainer/.ssh",target="/home/vscode/.ssh",consistency=cached \
-            --mount type=bind,source="${PWD}/.devcontainer/.gpg2",target="/home/vscode/.gnupg",consistency=cached \
+            --mount type=bind,source="${PWD}/.devcontainer/.gpg2/keys",target="/home/vscode/.gnupg",consistency=cached \
             --mount type=bind,source="${PWD}/.devcontainer/.store",target="/home/vscode/.password-store",consistency=cached \
             --mount type=bind,source="${PWD}/.devcontainer/.aws",target="/home/vscode/.aws",consistency=cached \
             --mount type=bind,source="${PWD}",target="/workspaces/$GIT_REPO_NAME",consistency=cached \

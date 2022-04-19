@@ -240,6 +240,8 @@ function create_gpg_keys(){
 	check_git_config
 	CN=$(git config user.name)
 	EMAIL=$(git config user.name)
+	find "$HOME/.gnupg" -type f -exec chmod 600 {} \; # Set 600 for files
+	find "$HOME/.gnupg" -type d -exec chmod 700 {} \; # Set 700 for directories
     gpg2 --full-generate-key --batch  <<EOF
 %echo Generating a GPG key
 Key-Type: RSA
