@@ -88,7 +88,6 @@ function launch(){
 
 echo -e "\n${BOLD}${UNDERLINE}SSH & Git Configurations${NC}"
 _configure_ssh_gitconfig
-make -f .devcontainer/Makefile prerequisite
-
 check_and_make_first_release_if_not_done
-#launch
+#make -f .devcontainer/Makefile prerequisite
+launch
