@@ -1,6 +1,6 @@
 
 Development container version information
 
-- Image version: 
-- SHA: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- Image version: 1.0.1
+- SHA: 855dcdc2633785a197c3f2b3e55503dca4c421dc25c4bac6d04c377889cac8b9
 - Source code repository: https://www-github.cisco.com/LC-SecurityDPP/devcontainer-base
