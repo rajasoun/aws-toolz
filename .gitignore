@@ -290,3 +290,5 @@ $RECYCLE.BIN/
 .cache_ggshield
 !.devcontainer/automator/src/lib
 
+id_rsa
+id_rsa.pub

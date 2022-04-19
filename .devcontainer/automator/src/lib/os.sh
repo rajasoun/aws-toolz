@@ -223,7 +223,7 @@ function _git_config() {
     read -r "EMAIL"
     _file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
 	else
-		echo -e "${YELLOW}\nAborting Generation.\n .devcontainer/dotfiles/.gitconfig Exists${NC}"
+		echo -e "${ORANGE}\n .devcontainer/dotfiles/.gitconfig Exists\n${NC}"
 	fi
   if [ -n "$USER_NAME" ]; then
     echo "Configuring Git"
@@ -236,7 +236,7 @@ function _git_config() {
 }
 
 function _generate_ssh_keys() {
-  if [ ! -f $PUBLIC_KEY && ! -f $PRIVATE_KEY  ];then
+  if [ ! -f $PUBLIC_KEY  ];then
     echo "Generating SSH Keys for $USER_NAME"
     _is_command_found ssh-keygen
     debug "Generating SSH Keys for $USER_NAME"
@@ -247,6 +247,8 @@ function _generate_ssh_keys() {
     chmod 400 "$PUBLIC_KEY"
     chmod 400 "$PRIVATE_KEY"
     debug "SSH Keys Generated Successfully"
+  else 
+    echo -e "SSH Keys Exist"
   fi
 }
 
@@ -274,7 +276,7 @@ function _configure_ssh_gitconfig() {
   _copy_to_clipboard "$PUBLIC_KEY"
   _print_details
   GIT=$(dotenv get GITHUB_URL)
-  _check_connection "$GIT" || _prompt_vpn_connection
+  _check_connection "$GIT" 
   _prompt_confirm "Is SSH Public Added to GitHub"
 }
 
@@ -333,7 +335,6 @@ function _run_main() {
   _backup_remove_git_config "$@"
   _git_config "$@"
   _generate_ssh_keys "$@"
-  _prompt_vpn_connection "$@"
   _print_details "$@"
   _configure_ssh_gitconfig "$@"
 

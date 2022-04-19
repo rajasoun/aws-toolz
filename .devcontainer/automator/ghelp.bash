@@ -95,20 +95,20 @@ function _populate_dot_env() {
 	cp .env.sample .env
 
 	prompt "${BLUE}To Get the GitHub Key  ${NC}"
-	prompt "${YELLOW} Visit https://www.$(dotenv -f .env.sample get GITHUB_URL)/settings/tokens ${NC}"
+	prompt "${ORANGE} Visit https://www.$(dotenv -f .env.sample get GITHUB_URL)/settings/tokens ${NC}"
 	prompt "${BOLD}Enter Git Token: ${NC}"
 	read -r GITTOKEN
 	_file_replace_text "1__________FILL_ME__________1" "$GITTOKEN" "$(git rev-parse --show-toplevel)/.env"
 
 	prompt "${BLUE}To Get the GG Key - Register to Git Guardian ${NC}"
-	prompt "${YELLOW} Visit $(dotenv -f .env.sample get GITGUARDIAN_URL) ${NC}"
+	prompt "${ORANGE} Visit $(dotenv -f .env.sample get GITGUARDIAN_URL) ${NC}"
 	prompt "${BOLD}Enter Git Guardian API Key: ${NC}"
 	read -r GG_KEY
 	_file_replace_text "2__________FILL_ME__________2" "$GG_KEY" "$(git rev-parse --show-toplevel)/.env"
 	_check_gg_api
 
 	prompt "${BLUE}To Get the Sentry DSN  ${NC}"
-	prompt "${YELLOW} Visit $(dotenv -f .env.sample get SENTRY_URL) ${NC}"
+	prompt "${ORANGE} Visit $(dotenv -f .env.sample get SENTRY_URL) ${NC}"
 	prompt "${BOLD}Enter Sentry DSN: ${NC}"
 	read -r SENTRYDSN
 	_file_replace_text "3__________FILL_ME__________3" "$SENTRYDSN" "$(git rev-parse --show-toplevel)/.env"
@@ -310,7 +310,7 @@ alias ci-cd="make -f .devcontainer/Makefile $@"
 alias code-churn="code_churn"
 
 if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
-	prompt "${YELLOW} Starting gsetup ${NC}"
+	prompt "${ORANGE} Starting gsetup ${NC}"
 	gsetup
 fi
 
