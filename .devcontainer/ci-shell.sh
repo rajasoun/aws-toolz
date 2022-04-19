@@ -58,34 +58,6 @@ function check_and_make_first_release_if_not_done(){
     fi
 }
 
-# copy from -> to if not present
-function copy_ssh_config_dir(){
-    FROM="${HOME}/.ssh"
-    TO="${PWD}/.devcontainer/.ssh"
-
-    if [  ! -d "$TO"  ];then
-        echo -e "${BOLD}Copy $FROM to Current Directory${NC}"
-        rm -fr "$TO"
-        cp -R "$FROM" "$TO"
-    else
-        echo -e "${BOLD}Skipping $FROM Copy to Current Directory${NC}"
-    fi
-}
-
-# copy from -> to if not present
-function copy_git_config_file(){
-    FROM="${HOME}/.gitconfig"
-    TO="${PWD}/.devcontainer/dotfiles/.gitconfig"
-
-    if [  ! -f "$TO"  ];then
-        echo -e "${BOLD}Copy $FROM to Current Directory${NC}"
-        rm -fr "$TO"
-        cp -R "$FROM" "$TO"
-    else
-        echo -e "${BOLD}Skipping $FROM Copy to Current Directory${NC}"
-    fi
-}
-
 function launch(){
     GIT_REPO_NAME="$(basename "$(git rev-parse --show-toplevel)")"
     echo "Launching ci-shell for $name:$VERSION"
@@ -110,8 +82,7 @@ function launch(){
 }
 
 echo -e "SSH & Git Configurations"
-copy_ssh_config_dir
-copy_git_config_file
+_configure_ssh_gitconfig
 echo -e "\n"
 make -f .devcontainer/Makefile prerequisite
 

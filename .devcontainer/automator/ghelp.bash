@@ -88,8 +88,8 @@ function _install_git_hooks() {
 	prompt "Installing Git Hooks"
 	git config --unset-all core.hooksPath
 	pre-commit install --config /workspaces/shift-left/.pre-commit-config.yaml
-	# pre-commit install-hooks --config /workspaces/shift-left/.pre-commit-config.yaml
-	pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files
+	#pre-commit install-hooks --config /workspaces/shift-left/.pre-commit-config.yaml
+	run_pre_commit
 	# rm -fr $(git rev-parse --show-toplevel)/.husky
 	# cp -R /workspaces/husky $(git rev-parse --show-toplevel)/.husky
 	# husky install
@@ -343,8 +343,8 @@ alias grelease="_git_tag"
 #-------------------------------------------------------------
 # Generic Alias Commands
 #-------------------------------------------------------------
-alias pretty="npx prettier --config /workspaces/shift-left/.prettierrc.yml --write ."
-alias precommit="pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files"
+#alias pretty="npx prettier --config /workspaces/shift-left/.prettierrc.yml --write ."
+alias precommit="run_pre_commit"
 alias infra-test='/workspaces/tests/system/e2e_tests.sh'
 alias aws-env=".devcontainer/.aws/aws_vault_env.sh"
 

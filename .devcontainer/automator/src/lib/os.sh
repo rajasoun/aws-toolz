@@ -8,9 +8,9 @@ GREEN=$'\e[32m'
 BLUE=$'\e[34m'
 ORANGE=$'\x1B[33m'
 
-GIT_CONFIG_FILE="$HOME/.gitconfig"
-KEYS_PATH="ssh-keys"
-PRIVATE_KEY="$KEYS_PATH/id_rsa_cisco_github"
+GIT_CONFIG_FILE="${PWD}/.devcontainer/dotfiles/.gitconfig"
+KEYS_PATH="${PWD}/.devcontainer/dotfiles/.gitconfig"
+PRIVATE_KEY="$KEYS_PATH/id_rsa"
 PUBLIC_KEY="${PRIVATE_KEY}.pub"
 
 # Create Directory if the given directory does not exists
@@ -112,7 +112,8 @@ function lls() {
 
 # Run Pre Commit and Git Add on Changed Files
 function run_pre_commit() {
-  pre-commit run --all-files
+  pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files
+  #pre-commit run --all-files
   git diff --staged --name-only --diff-filter=ARM | xargs git add
   exit 0
 }
@@ -131,7 +132,7 @@ function _debug_option() {
   choice=$(tr '[:upper:]' '[:lower:]' <<<"$opt")
   echo "choice: $choice"
   case ${choice} in
-  -d) VERBOSE=1 ;;
+    -d) VERBOSE=1 ;;
   esac
 }
 
@@ -210,16 +211,13 @@ function _backup_remove_git_config() {
 
 function _git_config() {
   _backup_remove_git_config
-  if [ ! -f .devcontainer/dotfiles/.gitconfig ];then
-    echo "Executing Inside Dev Container."
-    cp .devcontainer/dotfiles/.gitconfig.sample .devcontainer/dotfiles/.gitconfig
+  if [ ! -f $GIT_CONFIG_FILE ];then
+    cp .devcontainer/dotfiles/.gitconfig.sample $GIT_CONFIG_FILE
 	  echo -e "${GREEN}Generating .gitconfig${NC}\n"
     MSG="${GREEN} Full Name ${NC}${ORANGE}(without eMail) : ${NC}"
-    # read -r -p "$MSG" USER_NAME
     read -r "USER_NAME?$MSG"
     _file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
     MSG="${GREEN} EMail ${NC}${ORANGE} : ${NC}"
-    # read -r -p "$MSG" USER_NAME
     read -r "EMAIL?$MSG"
     _file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
 	else
@@ -251,7 +249,6 @@ function _generate_ssh_keys() {
   chmod 400 "$PUBLIC_KEY"
   chmod 400 "$PRIVATE_KEY"
   debug "SSH Keys Generated Successfully"
-  debug "SSH Key Scan for GitHub Successfull"
 }
 
 function _print_details() {
@@ -267,7 +264,7 @@ function _print_details() {
   echo ""
 }
 
-function _configure_ssh() {
+function _configure_ssh_gitconfig() {
   debug "Git Config"
   _git_config
 
@@ -339,14 +336,13 @@ function _run_main() {
   _generate_ssh_keys "$@"
   _prompt_vpn_connection "$@"
   _print_details "$@"
-  _configure_ssh "$@"
+  _configure_ssh_gitconfig "$@"
 
   debug "$@"
   prompt "$@"
   all_colors "$@"
   lls "$@"
   run_pre_commit "$@"
-  cci-env-fix "$@"
   git-ssh-fix "$@"
   init_sentry "$@"
 }
