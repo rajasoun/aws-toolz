@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/"
+SCRIPT_PATH="$SCRIPT_DIR/automator/src/lib/os.sh"
+# shellcheck source=/dev/null
+source "$SCRIPT_PATH"
+
 # VERSION=$(git describe --tags --abbrev=0 | sed -Ee 's/^v|-.*//')
 export name="rajasoun/$(basename ${PWD})"
 LIST_TAGS=$(git tag -l)
@@ -87,4 +92,4 @@ echo -e "\n"
 make -f .devcontainer/Makefile prerequisite
 
 check_and_make_first_release_if_not_done
-launch
+#launch

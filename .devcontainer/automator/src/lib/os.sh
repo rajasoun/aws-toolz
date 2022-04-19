@@ -9,7 +9,7 @@ BLUE=$'\e[34m'
 ORANGE=$'\x1B[33m'
 
 GIT_CONFIG_FILE="${PWD}/.devcontainer/dotfiles/.gitconfig"
-KEYS_PATH="${PWD}/.devcontainer/dotfiles/.gitconfig"
+KEYS_PATH="${PWD}/.devcontainer/.ssh"
 PRIVATE_KEY="$KEYS_PATH/id_rsa"
 PUBLIC_KEY="${PRIVATE_KEY}.pub"
 
@@ -210,15 +210,17 @@ function _backup_remove_git_config() {
 }
 
 function _git_config() {
-  _backup_remove_git_config
+  #_backup_remove_git_config
   if [ ! -f $GIT_CONFIG_FILE ];then
     cp .devcontainer/dotfiles/.gitconfig.sample $GIT_CONFIG_FILE
 	  echo -e "${GREEN}Generating .gitconfig${NC}\n"
     MSG="${GREEN} Full Name ${NC}${ORANGE}(without eMail) : ${NC}"
-    read -r "USER_NAME?$MSG"
+    printf "$MSG"
+    read -r "USER_NAME"
     _file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
     MSG="${GREEN} EMail ${NC}${ORANGE} : ${NC}"
-    read -r "EMAIL?$MSG"
+    printf "$MSG"
+    read -r "EMAIL"
     _file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
 	else
 		echo -e "${YELLOW}\nAborting Generation.\n .devcontainer/dotfiles/.gitconfig Exists${NC}"
@@ -234,21 +236,18 @@ function _git_config() {
 }
 
 function _generate_ssh_keys() {
-  debug "Backing up $KEYS_PATH to $KEYS_PATH.bak"
-  rm -fr "$KEYS_PATH.bak"
-  [ -d "$KEYS_PATH" ] && mv "$KEYS_PATH" "$KEYS_PATH.bak"
-  [ ! -d "$KEYS_PATH" ] && mkdir -p "$KEYS_PATH"
+  if [ ! -f $PUBLIC_KEY && ! -f $PRIVATE_KEY  ];then
+    echo "Generating SSH Keys for $USER_NAME"
+    _is_command_found ssh-keygen
+    debug "Generating SSH Keys for $USER_NAME"
+    ssh-keygen -q -t rsa -N '' -f "$PRIVATE_KEY" -C "$EMAIL" <<<y 2>&1 >/dev/null
 
-  echo "Generating SSH Keys for $USER_NAME"
-  _is_command_found ssh-keygen
-  debug "Generating SSH Keys for $USER_NAME"
-  ssh-keygen -q -t rsa -N '' -f "$PRIVATE_KEY" -C "$EMAIL" <<<y 2>&1 >/dev/null
-
-  echo "Set File Permissions"
-  # Fix Permission For Private Key
-  chmod 400 "$PUBLIC_KEY"
-  chmod 400 "$PRIVATE_KEY"
-  debug "SSH Keys Generated Successfully"
+    echo "Set File Permissions"
+    # Fix Permission For Private Key
+    chmod 400 "$PUBLIC_KEY"
+    chmod 400 "$PRIVATE_KEY"
+    debug "SSH Keys Generated Successfully"
+  fi
 }
 
 function _print_details() {
