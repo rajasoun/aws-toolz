@@ -6,12 +6,13 @@ Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
 From Terminal Window.
 ```sh
-$ ci-cd prerequisite
+$ .devcontainer/ci-shell.sh
+$ ci-cd config-prerequisite
 ```
 
 From Visual Studio Code - Dev Container Terminal Window.
 ```sh
-$ ci-cd prerequisite
+$ ci-cd tools-prerequisite
 ```
 
 ## awsaudit

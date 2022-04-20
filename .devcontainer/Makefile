@@ -24,13 +24,21 @@ help: ## This help.
 # DOCKER TASKS
 # Build the container
 
-prerequisite: ## Pre-Requisite Checks
+tools-prerequisite: ## Pre-Requisite Checks for build & push
 	@echo "$(GREEN)\nTools PreRequisite Checks $(RESET)"
+	@code --version >/dev/null 2>&1 && (echo "✅ Visual Studio Code") || (echo  "❌ Visual Studio Code")
+	@code --list-extensions --show-versions | grep -c remote-extensionpack  >/dev/null 2>&1 && \
+		(echo "✅ Visual Studio Code - Remote Development extension pack") || (echo  "❌ Visual Studio Code - Remote Development extension pack")
 	@make --version >/dev/null 2>&1 && (echo "✅ make") || (echo  "❌ make")
+	@docker --version >/dev/null 2>&1 && (echo "✅ Docker") || (echo  "❌ Docker")
+	@node --version >/dev/null 2>&1 && (echo "✅ node") || (echo  "❌ node")
+	@devcontainer --help >/dev/null 2>&1 && (echo "✅ devcontainer") || (echo  "❌ devcontainer")
 	@echo ""
+
+config-prerequisite: ## Pre-Requisite Checks for Configs
 	@echo "$(GREEN)\nConfigs PreRequisite Checks $(RESET)"
 	@ls -asl .devcontainer/dotfiles/.gitconfig >/dev/null 2>&1 && (echo "✅ .gitconfig File") || (echo  "❌ .gitconfig File. Execute -> generate_git_config")
-	@ls -asl .devcontainer/.ssh >/dev/null 2>&1 && (echo "✅ .ssh Folder") || (echo  "❌ .ssh Folder")
+	@ls -asl .devcontainer/.ssh >/dev/null 2>&1 && (echo "✅ .ssh Folder") || (echo  "❌ .ssh Folder. Execute -> generate_git_config")
 	@ls -asl .devcontainer/.gpg2/private.key >/dev/null 2>&1 && (echo "✅ gpg2 config") || (echo  "❌ gpg2 config. Execute -> generate_gpg_keys")
 	@ls -asl .devcontainer/.store/.gpg-id >/dev/null 2>&1 && (echo "✅ password-store config") || (echo  "❌ password-store config. Execute -> init_pass_store")
 	@ls -asl .devcontainer/.aws/config >/dev/null 2>&1 && (echo "✅ aws config") || (echo  "❌ aws config. Execute -> .devcontainer/.aws/aws_vault_env.sh")
