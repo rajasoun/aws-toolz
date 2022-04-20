@@ -292,6 +292,7 @@ alias gclean="git fetch --prune origin && git gc"
 alias glogin="git_hub_login $@"
 alias gstatus="_gstatus"
 alias ghooks="_install_git_hooks"
+alias gssh_config="_configure_ssh_gitconfig"
 alias grelease="_git_tag"
 
 #-------------------------------------------------------------
