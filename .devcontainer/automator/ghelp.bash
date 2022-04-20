@@ -259,8 +259,8 @@ EOF
 }
 
 function store_gpg_keys(){
-    gpg2 --export -a "$EMAIL" > .devcontainer/.gpg2/public.key
-    gpg2 --export-secret-keys --armor > .devcontainer/.gpg2/private.key
+    gpg2 --export -a "$EMAIL" > .devcontainer/.gpg2/ketys/public.key
+    gpg2 --export-secret-keys --armor > .devcontainer/.gpg2/keys/private.key
 }
 
 function list_gpg_keys(){
@@ -271,7 +271,7 @@ function generate_gpg_keys(){
 	rm -fr $HOME/.gnupg
 	create_gpg_keys
 	list_gpg_keys
-	store_keys
+	store_gpg_keys
 }
 
 function init_pass_store(){
