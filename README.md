@@ -19,9 +19,24 @@ $ ci-cd config-prerequisite
 
 ## Building and Pushing Devcontainers
 
+### Build Dev Container
+
 From Terminal Window.
 ```sh
-$ ci-cd tools-prerequisite and Installing missing executabled
+$ source .devcontainer/automator/ghelp.bash
+$ ci-cd tools-prerequisite 
+$ ci-cd build
+```
+
+### Push Dev Container
+
+From Terminal Window.
+```sh
+$ .devcontainer/ci-shell.sh
+$ devcontainer_signature
+$ exit 
+$ ci-cd build
+$ ci-cd push
 ```
 
 ## awsaudit
