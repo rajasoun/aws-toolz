@@ -10,9 +10,18 @@ $ .devcontainer/ci-shell.sh
 $ ci-cd config-prerequisite
 ```
 
-From Visual Studio Code - Dev Container Terminal Window.
+## Getting Started 
+
+In Visual Studio Code, DevContainer Terminal Windows and follow the instructions
 ```sh
-$ ci-cd tools-prerequisite
+$ ci-cd config-prerequisite
+```
+
+## Building and Pushing Devcontainers
+
+From Terminal Window.
+```sh
+$ ci-cd tools-prerequisite and Installing missing executabled
 ```
 
 ## awsaudit
