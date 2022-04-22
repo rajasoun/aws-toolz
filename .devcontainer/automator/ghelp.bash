@@ -229,17 +229,10 @@ function check_integrity(){
 	fi
 }
 
-# Set GNUPGHOME to create gpg keys in temp foleder
-function configure_to_create_in_temp_folder(){
-    GNUPGHOME="$(mktemp -d)"
-    export GNUPGHOME
-    echo "GNUPGHOME=$GNUPGHOME"
-}
-
 function create_gpg_keys(){
 	check_git_config
 	CN=$(git config user.name)
-	EMAIL=$(git config user.name)
+	EMAIL=$(git config user.email)
     gpg2 --full-generate-key --batch  <<EOF
 %echo Generating a GPG key
 Key-Type: RSA
@@ -254,8 +247,6 @@ Expire-Date: 1y
 %commit
 %echo Done
 EOF
-	find "$HOME/.gnupg" -type f -exec chmod 600 {} \; # Set 600 for files
-	find "$HOME/.gnupg" -type d -exec chmod 700 {} \; # Set 700 for directories
 }
 
 function store_gpg_keys(){
@@ -268,7 +259,9 @@ function list_gpg_keys(){
 }
 
 function generate_gpg_keys(){
-	rm -fr $HOME/.gnupg
+	mkdir -p .devcontainer/.gpg2/keys
+	find "$PGP_DIR" -type f -exec chmod 600 {} \; # Set 600 for files
+	find "$PGP_DIR" -type d -exec chmod 700 {} \; # Set 700 for directories
 	create_gpg_keys
 	list_gpg_keys
 	store_gpg_keys
@@ -279,6 +272,13 @@ function init_pass_store(){
 	if [ ! -f ".devcontainer/.store/.gpg-id" ];then
 		pass init $EMAIL
 	fi
+}
+
+function clean_secrets(){
+	rm -fr .devcontainer/.gpg2/keys/
+	rm -fr .devcontainer/.store/aws-vault
+	rm -fr .devcontainer/.store/.gpg-id
+	mkdir -p .devcontainer/.gpg2/keys
 }
 
 #-------------------------------------------------------------

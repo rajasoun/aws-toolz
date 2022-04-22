@@ -54,7 +54,8 @@ function aws_vault_exec() {
   CMD="$@"
   if [ -z "$CMD" ];then
     echo AWS Profile: $AWS_PROFILE. CTRL-D to exit.
-    aws-vault exec $AWS_PROFILE --no-session --
+    #export IGNORE_GHELP=1
+    aws-vault exec $AWS_PROFILE --no-session -- zsh
   else
     echo -e "\n${BOLD}${GREEN}Executing $CMD ${NC}\n"
     aws-vault exec $AWS_PROFILE --no-session -- $CMD

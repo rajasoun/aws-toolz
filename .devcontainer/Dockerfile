@@ -50,6 +50,7 @@ ARG USERNAME=vscode
 ARG PLUGIN_FOLDER="/home/$USERNAME/.oh-my-zsh/custom/plugins"
 RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUGIN_FOLDER"/zsh-syntax-highlighting
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGIN_FOLDER"/zsh-autosuggestions
+RUN git clone https://github.com/blimmer/zsh-aws-vault.git "$PLUGIN_FOLDER"/zsh-aws-vault
 COPY dotfiles/.zshrc /home/$USERNAME/
 
 # Copy shift-left files

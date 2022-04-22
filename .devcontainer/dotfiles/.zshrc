@@ -70,7 +70,7 @@ ZSH_THEME="codespaces"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(git zsh-syntax-highlighting zsh-autosuggestions zsh-aws-vault)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -108,4 +108,9 @@ export AWS_VAULT_BACKEND=pass
 export GPG_TTY="$(tty)"
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
 
-source /workspaces/automator/ghelp.bash
+PGP_DIR="$(git rev-parse --show-toplevel)/.devcontainer/.gpg2/keys"
+export GNUPGHOME="$PGP_DIR"
+
+if [ -z $IGNORE_GHELP ];then   
+    source /workspaces/automator/ghelp.bash
+fi
