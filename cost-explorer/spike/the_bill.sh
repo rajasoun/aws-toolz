@@ -14,17 +14,15 @@ export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-central-1}
 export ACCOUNT_ID=$(aws sts get-caller-identity | jq -r .Account)
 
 function get-data() {
+    local days="${1:-1}"
+    local yesterday=$(date -d "0 day ago" '+%Y-%m-%d')
+    local daybefore=$(date -d "$days day ago" '+%Y-%m-%d')
 
-local days="${1:-1}"
-
-local yesterday=$(date -d "0 day ago" '+%Y-%m-%d')
-local daybefore=$(date -d "$days day ago" '+%Y-%m-%d')
-
-aws ce get-cost-and-usage  \
-    --time-period Start=$daybefore,End=$yesterday \
-    --granularity=MONTHLY \
-    --group-by Type=DIMENSION,Key=SERVICE \
-    --metrics=UNBLENDED_COST 
+    aws ce get-cost-and-usage  \
+        --time-period Start=$daybefore,End=$yesterday \
+        --granularity=MONTHLY \
+        --group-by Type=DIMENSION,Key=SERVICE \
+        --metrics=UNBLENDED_COST 
 }
 
 
