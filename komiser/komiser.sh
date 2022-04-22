@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Load environment variables from aws-vault tool
-export $(aws-vault exec secops-experiments --no-session -- env | grep AWS | xargs)
+#export $(aws-vault exec secops-experiments --no-session -- env | grep AWS | xargs)
 
 AWS_DEFAULT_REGION=${1:-"us-east-1"}
 

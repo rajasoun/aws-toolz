@@ -240,8 +240,6 @@ function create_gpg_keys(){
 	check_git_config
 	CN=$(git config user.name)
 	EMAIL=$(git config user.name)
-	find "$HOME/.gnupg" -type f -exec chmod 600 {} \; # Set 600 for files
-	find "$HOME/.gnupg" -type d -exec chmod 700 {} \; # Set 700 for directories
     gpg2 --full-generate-key --batch  <<EOF
 %echo Generating a GPG key
 Key-Type: RSA
@@ -256,11 +254,13 @@ Expire-Date: 1y
 %commit
 %echo Done
 EOF
+	find "$HOME/.gnupg" -type f -exec chmod 600 {} \; # Set 600 for files
+	find "$HOME/.gnupg" -type d -exec chmod 700 {} \; # Set 700 for directories
 }
 
 function store_gpg_keys(){
-    gpg2 --export -a "$EMAIL" > .devcontainer/.gpg2/ketys/public.key
-    gpg2 --export-secret-keys --armor > .devcontainer/.gpg2/keys/private.key
+    gpg2 --export -a "$EMAIL" > "${PWD}/.devcontainer/.gpg2/keys/public.key"
+    gpg2 --export-secret-keys --armor > "${PWD}/.devcontainer/.gpg2/keys/private.key"
 }
 
 function list_gpg_keys(){

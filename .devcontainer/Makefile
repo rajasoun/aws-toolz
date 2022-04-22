@@ -39,7 +39,7 @@ config-prerequisite: ## Pre-Requisite Checks for Configs
 	@echo "$(GREEN)\nConfigs PreRequisite Checks $(RESET)"
 	@ls -asl .devcontainer/dotfiles/.gitconfig >/dev/null 2>&1 && (echo "✅ .gitconfig File") || (echo  "❌ .gitconfig File. Execute -> generate_git_config")
 	@ls -asl .devcontainer/.ssh >/dev/null 2>&1 && (echo "✅ .ssh Folder") || (echo  "❌ .ssh Folder. Execute -> gssh_config")
-	@ls -asl .devcontainer/.keys/private.key >/dev/null 2>&1 && (echo "✅ gpg2 config") || (echo  "❌ gpg2 config. Execute -> generate_gpg_keys")
+	@ls -asl .devcontainer/.gpg2/keys/private.key >/dev/null 2>&1 && (echo "✅ gpg2 config") || (echo  "❌ gpg2 config. Execute -> generate_gpg_keys")
 	@ls -asl .devcontainer/.store/.gpg-id >/dev/null 2>&1 && (echo "✅ password-store config") || (echo  "❌ password-store config. Execute -> init_pass_store")
 	@ls -asl .devcontainer/.aws/config >/dev/null 2>&1 && (echo "✅ aws config") || (echo  "❌ aws config. Execute -> .devcontainer/.aws/aws_vault_env.sh")
 	@echo ""
