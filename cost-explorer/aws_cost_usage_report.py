@@ -1,19 +1,29 @@
 #!/usr/bin/env python3
-
+"""
+AWS Budget Reporter
+"""
 import os
 
 import argparse
 import datetime
 
 import boto3.session
+from prettytable import PrettyTable
+import pyscreenshot as ImageGrab
+
+from requests_toolbelt import MultipartEncoder
+import requests
+
+from dotenv import load_dotenv
 
 
 def clear_screen():
-    import os
+    """Clear Console Screen"""
     os.system("clear")
 
 
 def process_cli_args():
+    """Prase Command Line Args and assign Defaults"""
     parser = argparse.ArgumentParser()
     parser.add_argument('--days', type=int, default=30)
     parser.add_argument('--profile', type=str, default='default')
@@ -29,6 +39,7 @@ def process_cli_args():
 
 
 def get_cost_usage_from_aws(aws_api, start, end):
+    """Get Spend Details from AWS Cost Explorer"""
     results = []
     token = None
     while True:
@@ -52,8 +63,7 @@ def get_cost_usage_from_aws(aws_api, start, end):
 
 
 def print_report(results):
-    # http://zetcode.com/python/prettytable/
-    from prettytable import PrettyTable
+    """Print AWS Expenses in tabulat Format"""
     table = PrettyTable()
     table.field_names = ['TimePeriod',
                          'Service', 'Amount', 'Unit', 'Estimated']
@@ -77,23 +87,41 @@ def print_report(results):
     clear_screen()
     budget = table.get_string(title="AWS Budget")
     print(budget)
+    total_cost = round(float(total_cost), 2)
     print("Total Cost: $ %.2f\n" % round(float(total_cost), 2))
 
 
 def save_screen_to_image():
-    import pyscreenshot as ImageGrab
-    #im = ImageGrab.grab()
-    # X1,Y1,X2,Y2    # part of the screen
-    im = ImageGrab.grab(bbox=(0, 80, 710, 510))
-    im.save('./generated/aws_budget.png')
-    im.show()
+    _im = ImageGrab.grab(bbox=(0, 80, 710, 510))
+    _im.save('./generated/aws_budget.png')
+    _im.show()
+
+
+def post_message():
+    """Post Message To WebEx Team"""
+    filepath = "./generated/aws_budget.png"
+    filetype = "image/png"
+    load_dotenv()
+
+    fields = {'roomId': os.getenv("ROOM_ID"),
+              'text': 'AWS Budget',
+              'files': ('aws_budget.png', open(filepath, 'rb'), filetype)}
+    multipart_encoder = MultipartEncoder(fields=fields)
+    post_request = requests.post(os.getenv("URL"), data=multipart_encoder,
+                                 headers={'Content-Type': multipart_encoder.content_type,
+                                          'Authorization': 'Bearer ' + os.getenv("TOKEN")})
+
+    print('Response: ' + str(post_request.json()))
+    print('Tracking ID: ' + str(post_request.headers['trackingId']))
 
 
 def main():
+    """Main"""
     aws_client, start, end = process_cli_args()
     results = get_cost_usage_from_aws(aws_client, start, end)
     print_report(results)
-    # save_screen_to_image()
+    save_screen_to_image()
+    post_message()
 
 
 main()

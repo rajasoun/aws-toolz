@@ -23,7 +23,7 @@ $ ci-cd config-prerequisite
    > Note: If you set a passphrase, you will be prompted to enter it.
 
    ```bash
-   $ gpg2 --gen-key
+   $ generate_gpg_keys #gpg2 --gen-key
    ```
 
 2. Configure `GPG_TTY` environment variable by running the following command and also adding it to your `~/.bashrc` file.
@@ -40,7 +40,7 @@ $ ci-cd config-prerequisite
    uid                  foo bar <foo@bar.com>
    sub   2048R/368D4190 2019-03-07
    
-   $ pass init bar <foo@bar.com>
+   $ init_pass_store #pass init bar <foo@bar.com>
    ```
 
 

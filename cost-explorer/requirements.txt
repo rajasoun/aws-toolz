@@ -7,3 +7,4 @@ pyscreenshot==3.0
 Pillow==9.1.0
 requests==2.27.1
 requests-toolbelt==0.9.1
+python-dotenv[cli]==0.20.0
