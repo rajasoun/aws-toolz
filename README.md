@@ -17,32 +17,24 @@ In Visual Studio Code, DevContainer Terminal Windows and follow the instructions
 $ ci-cd config-prerequisite
 ```
 
-### Configure gpg and pass
+### Configure gpg, pass and aws-vault
 
 1. Generate a new GPG private key. (Optional if you already have a GPG key setup and trusted on the system)
    > Note: If you set a passphrase, you will be prompted to enter it.
 
    ```bash
    $ generate_gpg_keys #gpg2 --gen-key
-   ```
+   ```   
 
-2. Configure `GPG_TTY` environment variable by running the following command and also adding it to your `~/.bashrc` file.
-   ```bash
-   export GPG_TTY="$(tty)"
-   ```
-
-3. Initialize the password-storage DB using the GPG `public` key ID or the associated email
+2. Initialize the password-storage DB using the GPG `public` key ID or the associated email
    ```bash
    $ gpg2 --list-keys
-   /home/user/.gnupg/pubring.gpg
-   ------------------------
-   pub   2048R/11C90413 2019-03-07
-   uid                  foo bar <foo@bar.com>
-   sub   2048R/368D4190 2019-03-07
-   
-   $ init_pass_store #pass init bar <foo@bar.com>
+   $ init_pass_store #similar to pass init <email_id> got from previous command
    ```
-
+3. Configure aws-vault through wrapper
+   ```bash
+   $ aws-env
+   ```
 
 ## Building and Pushing Devcontainers
 
@@ -77,7 +69,7 @@ Features of the AWS Audit:
 
 Select the AWS Profile for AWS Audit
 ```sh
-$ aws-vault-env
+$ aws-env
 ```
 
 Run the utility using below command
