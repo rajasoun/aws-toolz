@@ -114,8 +114,10 @@ function lls() {
 function run_pre_commit() {
   pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files
   #pre-commit run --all-files
-  git diff --staged --name-only --diff-filter=ARM | xargs git add
-  exit 0
+  if [ ! $(git diff --staged --name-only --diff-filter=ARM >/dev/null 2>&1 ) ];then
+    echo -e "${GREEN}Adding auto formated files${NC}"
+    git diff --staged --name-only --diff-filter=ARM | xargs git add
+  fi
 }
 
 # echo message when VERBOSE == 1
