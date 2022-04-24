@@ -45,8 +45,10 @@ infra-test	 - 	Run End to End Test on Devcontainer Infrastructure
 code-churn	 - 	Frequency of change to code base
 pretty		 - 	Code prettier
 precommit	 - 	Run Pre-commit checks on all Files
-aws-env		 -  Wrapper to aws-vault. CMD to execute is optional
 ci-cd		 - 	CI/CD for Devcontainer
+aws-env		 - 	Wrapper to aws-vault
+aws-whoami	 - 	Prints AWS Identity of the current aws-vault env
+aws-bill	 - 	Generates AWS Bill for the given aws-vault Profile
 alias		 - 	List all Alias
 - - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - - -
 "
@@ -281,6 +283,34 @@ function clean_secrets(){
 	mkdir -p .devcontainer/.gpg2/keys
 }
 
+function aws_whoami(){
+	AWS_PROFILE="$1"
+	AWS_WHOAMI_CMD="$(git rev-parse --show-toplevel)/cost-explorer/libs/identity.py"
+	AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
+	if [ -z $AWS_PROFILE ];then 
+		#AWS_PROFILE Empty
+		echo -e "\n${BOLD}${RED}AWS Profile parameter missing  ${NC}"
+		echo -e "aws-bill <aws_profile>\n"
+	else
+		#AWS_PROFILE Not Empty
+		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_WHOAMI_CMD
+	fi 
+}
+
+function aws_bill(){
+	AWS_PROFILE="$1"
+	if [ -z $AWS_PROFILE ];then 
+		#AWS_PROFILE Empty
+		echo -e "\n${BOLD}${RED}AWS Profile parameter missing  ${NC}"
+		echo -e "aws-bill <aws_profile>\n"
+	else
+		#AWS_PROFILE Not Empty
+		AWS_BILL_CMD="$(git rev-parse --show-toplevel)/cost-explorer/bill.py --profile $AWS_PROFILE --log Warn"
+		AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
+		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_BILL_CMD
+	fi 
+}
+
 #-------------------------------------------------------------
 # Git Alias Commands
 #-------------------------------------------------------------
@@ -302,6 +332,8 @@ alias grelease="_git_tag"
 alias precommit="run_pre_commit"
 alias infra-test='/workspaces/tests/system/e2e_tests.sh'
 alias aws-env="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
+alias aws-whoami="aws_whoami $@"
+alias aws-bill="aws_bill $@"
 
 # For Sentry
 alias init-debug='init_debug'

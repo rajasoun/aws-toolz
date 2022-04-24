@@ -42,18 +42,28 @@ function aws_vault_exec() {
     add_profile_to_aws_vault
     return 1
   fi
-
-  local nlist=$(echo "$list" | nl)
-  while [[ -z $AWS_PROFILE ]]; do
-      local AWS_PROFILE=$(read -p "AWS profile? `echo $'\n\r'`$nlist `echo $'\n> '`" N; echo "$list" | sed -n ${N}p)
-  done
-  aws-vault list | awk '{print $2}' | grep -c "$AWS_PROFILE" >/dev/null 2>&1 && \
-    (echo -e "\n✅ AWS Profile $AWS_PROFILE") || \
-    (echo -e "\n💣 Missing Credentials For $AWS_PROFILE \n";aws-vault add $AWS_PROFILE)
+  # if AWS_PROFILE is empty - Interative Mode
+  if [ -z "$AWS_PROFILE" ];then
+    local nlist=$(echo "$list" | nl)
+    while [[ -z $AWS_PROFILE ]]; do
+        local AWS_PROFILE=$(read -p "AWS profile? `echo $'\n\r'`$nlist `echo $'\n> '`" N; echo "$list" | sed -n ${N}p)
+    done
+  fi
+  # if aws-vault credentials are present for AWS_PROFILE 
+  if [ ! $(aws-vault list | awk '{print $2}' | grep -c "$AWS_PROFILE" >/dev/null 2>&1) ];then
+    echo -e "\n✅ AWS Profile $AWS_PROFILE"
+  else 
+    echo -e "\n💣 Missing Credentials For $AWS_PROFILE \n"
+    aws-vault add $AWS_PROFILE
+    echo -e "\n✅ AWS Credentials added for Profile $AWS_PROFILE"
+  fi 
+  # aws-vault list | awk '{print $2}' | grep -c "$AWS_PROFILE" >/dev/null 2>&1 && \
+  #   (echo -e "\n✅ AWS Profile $AWS_PROFILE") || \
+  #   (echo -e "\n💣 Missing Credentials For $AWS_PROFILE \n";aws-vault add $AWS_PROFILE)
   AWS_VAULT=
   CMD="$@"
   if [ -z "$CMD" ];then
-    echo AWS Profile: $AWS_PROFILE. CTRL-D to exit.
+    echo -e "\n${BOLD}AWS Profile: $AWS_PROFILE. ${UNDERLINE}CTRL-D to exit.${NC}\n"
     #export IGNORE_GHELP=1
     aws-vault exec $AWS_PROFILE --no-session -- zsh
   else
