@@ -49,7 +49,8 @@ class Bill:
         # specify --log=DEBUG or --log=debug
         log_level = getattr(logging, args.log.upper(), None)
         if not isinstance(log_level, int):
-            raise ValueError('Invalid log level: %s' % args.log)
+            msg = 'Invalid log level: %s'
+            raise ValueError(msg % args.log)
         logging.basicConfig(level=log_level)
         self.logger = logging.getLogger('cost-explorer')
 
@@ -79,9 +80,11 @@ def format_report(costexplorer):
     lines = []
     for report in costexplorer.reports:
         print("\n" + report['Name'])
-        df = pd.read_csv(costexplorer.csv_file_name)
-        table = tabulate(df, headers='keys', tablefmt='psql', showindex=False)
-        lines.append(table)
+        lines.append(tabulate(pd.read_csv(costexplorer.csv_file_name),
+                              headers='keys',
+                              tablefmt='psql',
+                              showindex=False)
+                     )
     return lines
 
 
