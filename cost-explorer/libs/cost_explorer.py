@@ -69,7 +69,7 @@ TAG_KEY = os.environ.get("TAG_KEY")
 class CostExplorer:
     """Retrieves BillingInfo checks from CostExplorer API"""
 
-    def __init__(self, client=None, CurrentMonth=False):
+    def __init__(self, client=None, current_month=False):
         # Array of reports ready to be output to Excel.
         self.csv_file_name = None
         self.reports = []
@@ -79,7 +79,7 @@ class CostExplorer:
 
         self.end = datetime.date.today().replace(day=1)
         self.riend = datetime.date.today()
-        if CurrentMonth or CURRENT_MONTH:
+        if current_month or CURRENT_MONTH:
             self.end = self.riend
 
         if LAST_MONTH_ONLY:
@@ -104,27 +104,27 @@ class CostExplorer:
         )
         self.accounts = {}
 
-    def addReport(
+    def add_report(
         self,
         report_dir,
-        Name="Default",
-        GroupBy=None,
-        Style="Total",
-        NoCredits=True,
-        CreditsOnly=False,
-        RefundOnly=False,
-        UpfrontOnly=False,
-        IncSupport=False,
-        IncTax=True,
-        type="table",
+        report_name="Default",
+        group_by=None,
+        report_style="Total",
+        no_credits=True,
+        credits_only=False,
+        refund_only=False,
+        upfront_only=False,
+        include_support=False,
+        include_tax=True,
+        report_type="chart",
     ):
         """Add Report"""
-        if GroupBy is None:
-            GroupBy = [
+        if group_by is None:
+            group_by = [
                 {"Type": "DIMENSION", "Key": "SERVICE"},
             ]
         results = []
-        if not NoCredits:
+        if not no_credits:
             response = self.client.get_cost_and_usage(
                 TimePeriod={
                     "Start": self.start.isoformat(),
@@ -134,10 +134,10 @@ class CostExplorer:
                 Metrics=[
                     "UnblendedCost",
                 ],
-                GroupBy=GroupBy,
+                GroupBy=group_by,
             )
         else:
-            Filter = {"And": []}
+            report_filter = {"And": []}
 
             Dimensions = {
                 "Not": {
@@ -148,7 +148,7 @@ class CostExplorer:
                 }
             }
             if (
-                INC_SUPPORT or IncSupport
+                INC_SUPPORT or include_support
             ):  # If global set for including support, we dont exclude it
                 Dimensions = {
                     "Not": {
@@ -158,7 +158,7 @@ class CostExplorer:
                         }
                     }
                 }
-            if CreditsOnly:
+            if credits_only:
                 Dimensions = {
                     "Dimensions": {
                         "Key": "RECORD_TYPE",
@@ -167,7 +167,7 @@ class CostExplorer:
                         ],
                     }
                 }
-            if RefundOnly:
+            if refund_only:
                 Dimensions = {
                     "Dimensions": {
                         "Key": "RECORD_TYPE",
@@ -176,7 +176,7 @@ class CostExplorer:
                         ],
                     }
                 }
-            if UpfrontOnly:
+            if upfront_only:
                 Dimensions = {
                     "Dimensions": {
                         "Key": "RECORD_TYPE",
@@ -186,7 +186,7 @@ class CostExplorer:
                     }
                 }
             # If filtering Record_Types and Tax excluded
-            if "Not" in Dimensions and (not INC_TAX or not IncTax):
+            if "Not" in Dimensions and (not INC_TAX or not include_tax):
                 Dimensions["Not"]["Dimensions"]["Values"].append("Tax")
 
             tagValues = None
@@ -201,12 +201,12 @@ class CostExplorer:
                 )
 
             if tagValues:
-                Filter["And"].append(Dimensions)
+                report_filter["And"].append(Dimensions)
                 if len(tagValues["Tags"]) > 0:
                     Tags = {"Tags": {"Key": TAG_KEY, "Values": tagValues["Tags"]}}
-                    Filter["And"].append(Tags)
+                    report_filter["And"].append(Tags)
             else:
-                Filter = Dimensions.copy()
+                report_filter = Dimensions.copy()
 
             response = self.client.get_cost_and_usage(
                 TimePeriod={
@@ -217,8 +217,8 @@ class CostExplorer:
                 Metrics=[
                     "UnblendedCost",
                 ],
-                GroupBy=GroupBy,
-                Filter=Filter,
+                GroupBy=group_by,
+                Filter=report_filter,
             )
 
         if response:
@@ -235,7 +235,7 @@ class CostExplorer:
                     Metrics=[
                         "UnblendedCost",
                     ],
-                    GroupBy=GroupBy,
+                    GroupBy=group_by,
                     NextPageToken=nextToken,
                 )
 
@@ -262,7 +262,7 @@ class CostExplorer:
         df.set_index("date", inplace=True)
         df = df.fillna(0.0)
 
-        if Style == "Change":
+        if report_style == "Change":
             dfc = df.copy()
             lastindex = None
             for index, row in df.iterrows():
@@ -275,8 +275,8 @@ class CostExplorer:
                             df.at[index, i] = 0
                 lastindex = index
         df = df.sort_values(by=["date"], ascending=False)
-        self.reports.append({"Name": Name, "Data": df.T, "Type": type})
-        self.csv_file_name = report_dir + Name.lower() + ".csv"
+        self.reports.append({"Name": report_name, "Data": df.T, "Type": report_type})
+        self.csv_file_name = report_dir + report_name.lower() + ".csv"
         df.to_csv(self.csv_file_name, sep=",", encoding="utf-8")
 
     def generate_excel(self, report_dir, current_month=False):
@@ -310,12 +310,16 @@ class CostExplorer:
 
 def main():
     """Entry Point"""
-    costexplorer = CostExplorer(CurrentMonth=False)
+    costexplorer = CostExplorer(current_month=False)
     report_path = BASE_DIR + "/cost-explorer/generated/" + "secops-experiments" + "/"
     # Default addReport has filter to remove Support / Credits / Refunds / UpfrontRI / Tax
     # Overall Billing Reports
-    costexplorer.addReport(
-        report_path, Name="Total", GroupBy=[], Style="Total", IncSupport=True
+    costexplorer.add_report(
+        report_path,
+        report_name="Total",
+        group_by=[],
+        report_style="Total",
+        include_support=True,
     )
 
     for report in costexplorer.reports:

@@ -29,8 +29,7 @@ from libs import identity
 from libs.cost_explorer import CostExplorer
 
 BASE_DIR = (
-    subprocess.Popen(["git", "rev-parse", "--show-toplevel"],
-                     stdout=subprocess.PIPE)
+    subprocess.Popen(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
     .communicate()[0]
     .rstrip()
     .decode("utf-8")
@@ -68,8 +67,7 @@ class Bill:
 
         self.aws_profile = args.profile
         now = datetime.datetime.utcnow()
-        self.start = (now - datetime.timedelta(days=args.days)
-                      ).strftime("%Y-%m-%d")
+        self.start = (now - datetime.timedelta(days=args.days)).strftime("%Y-%m-%d")
         self.end = now.strftime("%Y-%m-%d")
         self.report_path = (
             BASE_DIR + "/cost-explorer/generated/" + self.aws_profile + "/"
@@ -126,21 +124,21 @@ def main():
     whoami_info = identity.whoami(session=session)
     print(identity.format_whoami(whoami_info))
     client = session.client("ce", "us-east-1")
-    costexplorer = CostExplorer(client, CurrentMonth=False)
-    costexplorer.addReport(
+    costexplorer = CostExplorer(client, current_month=False)
+    costexplorer.add_report(
         bill.report_path,
-        Name="Total",
-        GroupBy=[],
-        Style="Total",
-        IncSupport=True,
-        type="chart",
+        report_name="Total",
+        group_by=[],
+        report_style="Total",
+        include_support=True,
+        report_type="chart",
     )
-    costexplorer.addReport(
+    costexplorer.add_report(
         bill.report_path,
-        Name="TotalInclCreditsChange",
-        GroupBy=[],
-        Style="Change",
-        NoCredits=True,
+        report_name="TotalInclCreditsChange",
+        group_by=[],
+        report_style="Change",
+        no_credits=True,
     )
     reports = format_report(costexplorer)
     print_report(reports)
