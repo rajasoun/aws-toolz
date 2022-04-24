@@ -95,6 +95,12 @@ def format_report(costexplorer):
     return lines
 
 
+def print_report(reports):
+    """Print Report Array to stdout"""
+    for report in reports:
+        print(report)
+
+
 def main():
     """Entry Point"""
     bill = Bill()
@@ -107,8 +113,7 @@ def main():
         Name="Total", GroupBy=[], Style="Total", IncSupport=True, type="chart"
     )
     reports = format_report(costexplorer)
-    for report in reports:
-        print(report)
+    print_report(reports)
     costexplorer.generate_excel(CURRENT_MONTH=False)
 
 
