@@ -49,14 +49,14 @@ function aws_vault_exec() {
         local AWS_PROFILE=$(read -p "AWS profile? `echo $'\n\r'`$nlist `echo $'\n> '`" N; echo "$list" | sed -n ${N}p)
     done
   fi
-  # if aws-vault credentials are present for AWS_PROFILE 
+  # if aws-vault credentials are present for AWS_PROFILE
   if [ ! $(aws-vault list | awk '{print $2}' | grep -c "$AWS_PROFILE" >/dev/null 2>&1) ];then
     echo -e "\n✅ AWS Profile $AWS_PROFILE"
-  else 
+  else
     echo -e "\n💣 Missing Credentials For $AWS_PROFILE \n"
     aws-vault add $AWS_PROFILE
     echo -e "\n✅ AWS Credentials added for Profile $AWS_PROFILE"
-  fi 
+  fi
   # aws-vault list | awk '{print $2}' | grep -c "$AWS_PROFILE" >/dev/null 2>&1 && \
   #   (echo -e "\n✅ AWS Profile $AWS_PROFILE") || \
   #   (echo -e "\n💣 Missing Credentials For $AWS_PROFILE \n";aws-vault add $AWS_PROFILE)

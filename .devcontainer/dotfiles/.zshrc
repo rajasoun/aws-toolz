@@ -111,6 +111,6 @@ export PRE_COMMIT_ALLOW_NO_CONFIG=1
 PGP_DIR="$(git rev-parse --show-toplevel)/.devcontainer/.gpg2/keys"
 export GNUPGHOME="$PGP_DIR"
 
-if [ -z $IGNORE_GHELP ];then   
+if [ -z $IGNORE_GHELP ];then
     source /workspaces/automator/ghelp.bash
 fi

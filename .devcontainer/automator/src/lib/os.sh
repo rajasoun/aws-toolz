@@ -226,7 +226,7 @@ function _git_config() {
 	else
 		echo -e "${ORANGE}\n.devcontainer/dotfiles/.gitconfig Exists${NC}"
 	fi
-  
+
 }
 
 function _generate_ssh_keys() {
@@ -248,7 +248,7 @@ function _generate_ssh_keys() {
     _prompt_confirm "Is SSH Public Added to GitHub"
     git-ssh-fix
     ssh -T git@$(dotenv get GITHUB_URL)
-  else 
+  else
     echo -e "${ORANGE}SSH Keys Exist\n${NC}"
   fi
 }

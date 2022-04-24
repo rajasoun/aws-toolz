@@ -1,19 +1,17 @@
 # Getting Started
 
-Do all Checks 
+Do all Checks
 
 ```sh
-$ ./prowler.sh 
+$ ./prowler.sh
 ```
 
-Do Only RDS Check 
+Do Only RDS Check
 ```sh
 $ ./prowler.sh -q -g rds
 ```
 
-Do Only GDPR Check 
+Do Only GDPR Check
 ```sh
 $ ./prowler.sh -q -g gdpr
 ```
-
-

@@ -22,17 +22,17 @@ function get-data() {
         --time-period Start=$daybefore,End=$yesterday \
         --granularity=MONTHLY \
         --group-by Type=DIMENSION,Key=SERVICE \
-        --metrics=UNBLENDED_COST 
+        --metrics=UNBLENDED_COST
 }
 
 
 function transform() {
-  jq -r  '[ .ResultsByTime[] | 
+  jq -r  '[ .ResultsByTime[] |
           .TimePeriod.Start as $sdate |
-          "'$ACCOUNT_ID'" as $account | 
-          .Groups[] |  
-          [ $account, $sdate, .Keys[], (.Metrics.UnblendedCost.Amount | tonumber) ] 
-          ] | sort_by([ .[2], .[1], .[2] ]) | reverse | .[] | @csv' 
+          "'$ACCOUNT_ID'" as $account |
+          .Groups[] |
+          [ $account, $sdate, .Keys[], (.Metrics.UnblendedCost.Amount | tonumber) ]
+          ] | sort_by([ .[2], .[1], .[2] ]) | reverse | .[] | @csv'
 }
 
 
@@ -40,8 +40,8 @@ function show_help() {
 cat << __DOC__
 
 $1 [--days=n] csv|json
- 
-	Write per-service costs for the last n days to STDOUT in CSV or JSON format. 
+
+	Write per-service costs for the last n days to STDOUT in CSV or JSON format.
 
 cat JSONFILE | $1 json_to_csv
 
@@ -55,13 +55,13 @@ days=2
 
 if [[ "$#" -eq 0  ]]; then
 	show_help $0
-else 
+else
 while [[ "$#" -gt 0 ]]; do case $1 in
-     -d|--days) 
-        days="$2"; 
+     -d|--days)
+        days="$2";
         shift
      ;;
-     --days=*) 
+     --days=*)
 		days="${1#*=}";
 	 ;;
 	 -h|--help)
@@ -83,4 +83,3 @@ while [[ "$#" -gt 0 ]]; do case $1 in
 esac; shift; done
 
 fi
-

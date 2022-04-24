@@ -2,7 +2,7 @@ boto3==1.21.44
 botocore==1.24.44
 python-dotenv[cli]==0.20.0
 tabulate==0.8.9
-pandas==1.4.2 
+pandas==1.4.2
 XlsxWriter==3.0.3
 python-dateutil==2.8.2
 # pyscreenshot==3.0
@@ -11,4 +11,3 @@ python-dateutil==2.8.2
 # mss==6.1.0
 # Jinja2==3.1.1
 # imgkit==1.2.2
-

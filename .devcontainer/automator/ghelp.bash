@@ -287,19 +287,19 @@ function aws_whoami(){
 	AWS_PROFILE="$1"
 	AWS_WHOAMI_CMD="$(git rev-parse --show-toplevel)/cost-explorer/libs/identity.py"
 	AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
-	if [ -z $AWS_PROFILE ];then 
+	if [ -z $AWS_PROFILE ];then
 		#AWS_PROFILE Empty
 		echo -e "\n${BOLD}${RED}AWS Profile parameter missing  ${NC}"
 		echo -e "aws-bill <aws_profile>\n"
 	else
 		#AWS_PROFILE Not Empty
 		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_WHOAMI_CMD
-	fi 
+	fi
 }
 
 function aws_bill(){
 	AWS_PROFILE="$1"
-	if [ -z $AWS_PROFILE ];then 
+	if [ -z $AWS_PROFILE ];then
 		#AWS_PROFILE Empty
 		echo -e "\n${BOLD}${RED}AWS Profile parameter missing  ${NC}"
 		echo -e "aws-bill <aws_profile>\n"
@@ -308,7 +308,7 @@ function aws_bill(){
 		AWS_BILL_CMD="$(git rev-parse --show-toplevel)/cost-explorer/bill.py --profile $AWS_PROFILE --log Warn"
 		AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
 		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_BILL_CMD
-	fi 
+	fi
 }
 
 #-------------------------------------------------------------

@@ -10,7 +10,7 @@ $ .devcontainer/ci-shell.sh
 $ ci-cd config-prerequisite
 ```
 
-## Getting Started 
+## Getting Started
 
 In Visual Studio Code, DevContainer Terminal Windows and follow the instructions
 ```sh
@@ -24,7 +24,7 @@ $ ci-cd config-prerequisite
 
    ```bash
    $ generate_gpg_keys #gpg2 --gen-key
-   ```   
+   ```
 
 2. Initialize the password-storage DB using the GPG `public` key ID or the associated email
    ```bash
@@ -43,7 +43,7 @@ $ ci-cd config-prerequisite
 From Terminal Window.
 ```sh
 $ source .devcontainer/automator/ghelp.bash
-$ ci-cd tools-prerequisite 
+$ ci-cd tools-prerequisite
 $ ci-cd build
 ```
 
@@ -53,7 +53,7 @@ From Terminal Window.
 ```sh
 $ .devcontainer/ci-shell.sh
 $ devcontainer_signature
-$ exit 
+$ exit
 $ ci-cd build
 $ ci-cd push
 ```
