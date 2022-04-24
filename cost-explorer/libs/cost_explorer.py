@@ -279,7 +279,7 @@ class CostExplorer:
         self.csv_file_name = report_dir + Name.lower() + ".csv"
         df.to_csv(self.csv_file_name, sep=",", encoding="utf-8")
 
-    def generate_excel(self, report_dir, CURRENT_MONTH=False):
+    def generate_excel(self, report_dir, current_month=False):
         """Generate Excel Report"""
         excel_file = report_dir + "report.xlsx"
         writer = pd.ExcelWriter(excel_file, engine="xlsxwriter")
@@ -292,7 +292,7 @@ class CostExplorer:
                 # Create a chart object.
                 chart = workbook.add_chart({"type": "column", "subtype": "stacked"})
                 chartend = 12
-                if CURRENT_MONTH:
+                if current_month:
                     chartend = 13
                 for row_num in range(1, len(report["Data"]) + 1):
                     chart.add_series(
@@ -322,7 +322,7 @@ def main():
         print("\n" + report["Name"])
         df = pd.read_csv(costexplorer.csv_file_name)
         print(df)
-    costexplorer.generate_excel(report_path, CURRENT_MONTH=False)
+    costexplorer.generate_excel(report_path, current_month=False)
     return "Report Generated"
 
 

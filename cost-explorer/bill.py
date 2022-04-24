@@ -144,7 +144,7 @@ def main():
     )
     reports = format_report(costexplorer)
     print_report(reports)
-    costexplorer.generate_excel(bill.report_path, CURRENT_MONTH=False)
+    costexplorer.generate_excel(bill.report_path, current_month=False)
 
 
 if __name__ == "__main__":
