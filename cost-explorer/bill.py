@@ -38,15 +38,10 @@ BASE_DIR = (
 
 
 class Bill:
-    """Retrieves BillingInfo from AWS through CostExplorer API
-    >>> bill = Bill()
-    >>> bill.process_cli_args()
-    >>> costexplorer = Costexplorer
-    >>> costexplorer.addReport(GroupBy=[{"Type": "DIMENSION","Key": "SERVICE"}])
-    """
+    """Retrieves BillingInfo from AWS through CostExplorer API"""
 
     def __init__(self):
-        """Inirialization"""
+        """Initialization"""
         parser = argparse.ArgumentParser()
         parser.add_argument("--log", type=str, default="debug")
         parser.add_argument("--days", type=int, default=30)
@@ -80,7 +75,8 @@ class Bill:
         )
         load_dotenv()
 
-    def get_aws_session(self, aws_profile):
+    @staticmethod
+    def get_aws_session(aws_profile):
         """Get AWS Session"""
         session = boto3.session.Session(
             profile_name=aws_profile,

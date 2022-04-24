@@ -189,5 +189,6 @@ $RECYCLE.BIN/
 
 bot.txt
 Pipfile
+Pipfile.lock
 
 
