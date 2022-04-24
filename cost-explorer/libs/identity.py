@@ -3,6 +3,7 @@
 """Utility for determining what AWS account and identity you're using."""
 
 from __future__ import print_function
+from asyncio.log import logger
 
 __author__ = "Raja Soundaramourty"
 __version__ = "0.1.0"
@@ -49,6 +50,7 @@ and also gets your account alias (if you're allowed)
 
 
 def main():
+    """Entry Point"""
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument("--profile", help="AWS profile to use")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
@@ -77,18 +79,21 @@ def main():
             print(json.dumps(whoami_info._asdict()))
         else:
             print(format_whoami(whoami_info))
-    except Exception as e:
+    except Exception as exception:
         if args.debug:
             traceback.print_exc()
-        err_cls = type(e)
+        err_cls = type(exception)
         err_cls_str = err_cls.__name__
         if err_cls.__module__ != "builtins":
-            err_cls_str = "{}.{}".format(err_cls.__module__, err_cls_str)
-        sys.stderr.write("ERROR [{}]: {}\n".format(err_cls_str, e))
+            format_msg = "{}.{}"
+            err_cls_str = format_msg.format(err_cls.__module__, err_cls_str)
+        error = "ERROR [{}]: {}\n"
+        sys.stderr.write(error.format(err_cls_str, exception))
         sys.exit(1)
 
 
 def format_whoami(whoami_info):
+    """Format whoami info"""
     lines = []
     lines.append(("Account: ", whoami_info.Account))
     for alias in whoami_info.AccountAliases:
@@ -98,13 +103,15 @@ def format_whoami(whoami_info):
         lines.append(("AWS SSO: ", whoami_info.SSOPermissionSet))
     else:
         type_str = "".join(p[0].upper() + p[1:] for p in whoami_info.Type.split("-"))
-        lines.append(("{}: ".format(type_str), whoami_info.Name))
+        whoami_line = "{}: "
+        lines.append((whoami_line.format(type_str), whoami_info.Name))
     if whoami_info.RoleSessionName:
         lines.append(("RoleSessionName: ", whoami_info.RoleSessionName))
     lines.append(("UserId: ", whoami_info.UserId))
     lines.append(("Arn: ", whoami_info.Arn))
     max_len = max(len(l[0]) for l in lines)
-    return "\n".join("{}{}".format(l[0].ljust(max_len), l[1]) for l in lines)
+    formatted_lines = "{}{}"
+    return "\n".join(formatted_lines.format(l[0].ljust(max_len), l[1]) for l in lines)
 
 
 def whoami(session=None, disable_account_alias=False):
@@ -143,8 +150,9 @@ def whoami(session=None, disable_account_alias=False):
         try:
             # format is AWSReservedSSO_{permission-set}_{random-tag}
             data["SSOPermissionSet"] = data["Name"].split("_", 1)[1].rsplit("_", 1)[0]
-        except Exception as e:
+        except Exception as exception:
             data["SSOPermissionSet"] = None
+            logger.critical(exception)
     else:
         data["SSOPermissionSet"] = None
 
@@ -166,8 +174,8 @@ def whoami(session=None, disable_account_alias=False):
             )
             for response in paginator.paginate():
                 data["AccountAliases"].extend(response["AccountAliases"])
-        except ClientError as e:
-            if e.response.get("Error", {}).get("Code") != "AccessDenied":
+        except ClientError as exception:
+            if exception.response.get("Error", {}).get("Code") != "AccessDenied":
                 raise
 
     return WhoamiInfo(**data)
