@@ -12,9 +12,9 @@ import sys
 import argparse
 
 # utils
-import asyncio.log
 import traceback
 import json
+import logging
 from collections import namedtuple
 
 # aws
@@ -47,65 +47,35 @@ and also gets your account alias (if you're allowed)
 """
 
 
-def main():
-    """Entry Point"""
+def parse_args():
+    """Parse Command Line Args"""
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument("--profile", help="AWS profile to use")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     parser.add_argument("--version", action="store_true")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
-
-    if args.version:
-        print(__version__)
-        parser.exit()
-
-    try:
-        session = botocore.session.Session(profile=args.profile)
-        disable_account_alias = os.environ.get("AWS_WHOAMI_DISABLE_ACCOUNT_ALIAS", "")
-        if disable_account_alias.lower() in ["", "0", "false"]:
-            disable_account_alias = False
-        elif disable_account_alias.lower() in ["1", "true"]:
-            disable_account_alias = True
-        else:
-            disable_account_alias = disable_account_alias.split(",")
-        whoami_info = whoami(
-            session=session, disable_account_alias=disable_account_alias
-        )
-
-        if args.json:
-            print(json.dumps(whoami_info._asdict()))
-        else:
-            print(format_whoami(whoami_info))
-    except Exception as exception:
-        if args.debug:
-            traceback.print_exc()
-        err_cls = type(exception)
-        err_cls_str = err_cls.__name__
-        if err_cls.__module__ != "builtins":
-            format_msg = "{}.{}"
-            err_cls_str = format_msg.format(err_cls.__module__, err_cls_str)
-        error = "ERROR [{}]: {}\n"
-        sys.stderr.write(error.format(err_cls_str, exception))
-        sys.exit(1)
+    return args, parser
 
 
-def format_whoami(whoami_info):
+def format_whoami(whoami_infomation):
     """Format whoami info"""
-    lines = [("Account: ", whoami_info.Account)]
-    for alias in whoami_info.AccountAliases:
+    lines = [("Account: ", whoami_infomation.Account)]
+    for alias in whoami_infomation.AccountAliases:
         lines.append(("", alias))
-    lines.append(("Region: ", whoami_info.Region))
-    if whoami_info.SSOPermissionSet:
-        lines.append(("AWS SSO: ", whoami_info.SSOPermissionSet))
+    lines.append(("Region: ", whoami_infomation.Region))
+    if whoami_infomation.SSOPermissionSet:
+        lines.append(("AWS SSO: ", whoami_infomation.SSOPermissionSet))
     else:
-        type_str = "".join(p[0].upper() + p[1:] for p in whoami_info.Type.split("-"))
+        type_str = "".join(
+            p[0].upper() + p[1:] for p in whoami_infomation.Type.split("-")
+        )
         whoami_line = "{}: "
-        lines.append((whoami_line.format(type_str), whoami_info.Name))
-    if whoami_info.RoleSessionName:
-        lines.append(("RoleSessionName: ", whoami_info.RoleSessionName))
-    lines.append(("UserId: ", whoami_info.UserId))
-    lines.append(("Arn: ", whoami_info.Arn))
+        lines.append((whoami_line.format(type_str), whoami_infomation.Name))
+    if whoami_infomation.RoleSessionName:
+        lines.append(("RoleSessionName: ", whoami_infomation.RoleSessionName))
+    lines.append(("UserId: ", whoami_infomation.UserId))
+    lines.append(("Arn: ", whoami_infomation.Arn))
     max_len = max(len(line[0]) for line in lines)
     formatted_lines = "{}{}"
     return "\n".join(
@@ -127,6 +97,7 @@ def whoami(session=None, disable_account_alias: object = False):
     if session is None:
         session = botocore.session.get_session()
     elif hasattr(session, "_session"):  # allow boto3 Session as well
+        # pylint: disable=protected-access
         session = session._session
 
     data = {"Region": session.get_config_variable("region")}
@@ -148,9 +119,9 @@ def whoami(session=None, disable_account_alias: object = False):
         try:
             # format is AWSReservedSSO_{permission-set}_{random-tag}
             data["SSOPermissionSet"] = data["Name"].split("_", 1)[1].rsplit("_", 1)[0]
-        except Exception as exception:
+        except IndexError as error:
             data["SSOPermissionSet"] = None
-            asyncio.log.logger.critical(exception)
+            logging.critical(error)
     else:
         data["SSOPermissionSet"] = None
 
@@ -177,6 +148,47 @@ def whoami(session=None, disable_account_alias: object = False):
                 raise
 
     return WhoamiInfo(**data)
+
+
+def get_identity(args):
+    """Get Caller Identity"""
+    try:
+        session = botocore.session.Session(profile=args.profile)
+        disable_account_alias = os.environ.get("AWS_WHOAMI_DISABLE_ACCOUNT_ALIAS", "")
+        if disable_account_alias.lower() in ["", "0", "false"]:
+            disable_account_alias = False
+        elif disable_account_alias.lower() in ["1", "true"]:
+            disable_account_alias = True
+        else:
+            disable_account_alias = disable_account_alias.split(",")
+        info = whoami(session=session, disable_account_alias=disable_account_alias)
+
+        if args.json:
+            print(json.dumps(info._asdict()))
+        else:
+            print(format_whoami(info))
+    except botocore.exceptions.NoCredentialsError as error:
+        if args.debug:
+            traceback.print_exc()
+        err_cls = type(error)
+        err_cls_str = err_cls.__name__
+        if err_cls.__module__ != "builtins":
+            format_msg = "{}.{}"
+            err_cls_str = format_msg.format(err_cls.__module__, err_cls_str)
+        msg = "ERROR [{}]: {}\n"
+        sys.stderr.write(msg.format(err_cls_str, error))
+        sys.exit(1)
+
+
+def main():
+    """Entry Point"""
+    args, parser = parse_args()
+
+    if args.version:
+        print(__version__)
+        parser.exit()
+
+    get_identity(args)
 
 
 if __name__ == "__main__":
