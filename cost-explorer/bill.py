@@ -133,6 +133,13 @@ def main():
         IncSupport=True,
         type="chart",
     )
+    costexplorer.addReport(
+        bill.report_path,
+        Name="TotalInclCreditsChange",
+        GroupBy=[],
+        Style="Change",
+        NoCredits=True,
+    )
     reports = format_report(costexplorer)
     print_report(reports)
     costexplorer.generate_excel(bill.report_path, CURRENT_MONTH=False)

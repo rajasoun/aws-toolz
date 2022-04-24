@@ -126,6 +126,8 @@ def whoami(session=None, disable_account_alias: object = False):
     """
     if session is None:
         session = botocore.session.get_session()
+    elif hasattr(session, "_session"):  # allow boto3 Session as well
+        session = session._session
 
     data = {"Region": session.get_config_variable("region")}
 

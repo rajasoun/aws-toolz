@@ -280,6 +280,7 @@ class CostExplorer:
         df.to_csv(self.csv_file_name, sep=",", encoding="utf-8")
 
     def generate_excel(self, report_dir, CURRENT_MONTH=False):
+        """Generate Excel Report"""
         excel_file = report_dir + "report.xlsx"
         writer = pd.ExcelWriter(excel_file, engine="xlsxwriter")
         workbook = writer.book
@@ -308,6 +309,7 @@ class CostExplorer:
 
 
 def main():
+    """Entry Point"""
     costexplorer = CostExplorer(CurrentMonth=False)
     report_path = BASE_DIR + "/cost-explorer/generated/" + "secops-experiments" + "/"
     # Default addReport has filter to remove Support / Credits / Refunds / UpfrontRI / Tax
@@ -315,6 +317,7 @@ def main():
     costexplorer.addReport(
         report_path, Name="Total", GroupBy=[], Style="Total", IncSupport=True
     )
+
     for report in costexplorer.reports:
         print("\n" + report["Name"])
         df = pd.read_csv(costexplorer.csv_file_name)
