@@ -3,7 +3,6 @@
 AWS Budget Reporter
 """
 
-from __future__ import print_function
 
 __author__ = "Raja Soundaramourty"
 __version__ = "0.1.0"

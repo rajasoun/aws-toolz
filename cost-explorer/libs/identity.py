@@ -2,9 +2,6 @@
 
 """Utility for determining what AWS account and identity you're using."""
 
-from __future__ import print_function
-from asyncio.log import logger
-
 __author__ = "Raja Soundaramourty"
 __version__ = "0.1.0"
 __license__ = "MIT No Attribution"
@@ -15,6 +12,7 @@ import sys
 import argparse
 
 # utils
+import asyncio.log
 import traceback
 import json
 from collections import namedtuple
@@ -94,8 +92,7 @@ def main():
 
 def format_whoami(whoami_info):
     """Format whoami info"""
-    lines = []
-    lines.append(("Account: ", whoami_info.Account))
+    lines = [("Account: ", whoami_info.Account)]
     for alias in whoami_info.AccountAliases:
         lines.append(("", alias))
     lines.append(("Region: ", whoami_info.Region))
@@ -109,12 +106,14 @@ def format_whoami(whoami_info):
         lines.append(("RoleSessionName: ", whoami_info.RoleSessionName))
     lines.append(("UserId: ", whoami_info.UserId))
     lines.append(("Arn: ", whoami_info.Arn))
-    max_len = max(len(l[0]) for l in lines)
+    max_len = max(len(line[0]) for line in lines)
     formatted_lines = "{}{}"
-    return "\n".join(formatted_lines.format(l[0].ljust(max_len), l[1]) for l in lines)
+    return "\n".join(
+        formatted_lines.format(line[0].ljust(max_len), line[1]) for line in lines
+    )
 
 
-def whoami(session=None, disable_account_alias=False):
+def whoami(session=None, disable_account_alias: object = False):
     """Return a WhoamiInfo namedtuple.
 
     Args:
@@ -127,11 +126,8 @@ def whoami(session=None, disable_account_alias=False):
     """
     if session is None:
         session = botocore.session.get_session()
-    elif hasattr(session, "_session"):  # allow boto3 Session as well
-        session = session._session
 
-    data = {}
-    data["Region"] = session.get_config_variable("region")
+    data = {"Region": session.get_config_variable("region")}
 
     response = session.create_client("sts").get_caller_identity()
 
@@ -152,7 +148,7 @@ def whoami(session=None, disable_account_alias=False):
             data["SSOPermissionSet"] = data["Name"].split("_", 1)[1].rsplit("_", 1)[0]
         except Exception as exception:
             data["SSOPermissionSet"] = None
-            logger.critical(exception)
+            asyncio.log.logger.critical(exception)
     else:
         data["SSOPermissionSet"] = None
 
