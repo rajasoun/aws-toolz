@@ -2,6 +2,7 @@
 
 """
 Cost Explorer Report
+Base: https://github.com/aws-samples/aws-cost-explorer-report/blob/master/src/lambda.py
 """
 # pylint: skip-file
 
