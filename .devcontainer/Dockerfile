@@ -39,6 +39,14 @@ RUN set -ex \
         https://${AWS_VAULT_URL}/${AWS_VAULT_VERSION}/aws-vault-linux-amd64 \
     && chmod 755 /usr/local/bin/aws-vault
 
+# cloud-nuke CLI
+ENV CLOUD_NUKE_URL=github.com/gruntwork-io/cloud-nuke/releases/download
+ENV CLOUD_NUKE_VERSION=v0.11.3
+RUN set -ex \
+    && curl -L -o /usr/local/bin/cloud-nuke \
+        https://${CLOUD_NUKE_URL}/${CLOUD_NUKE_VERSION}/cloud-nuke_linux_amd64 \
+    && chmod 755 /usr/local/bin/cloud-nuke
+
 # Sentry CLI
 RUN set -ex \
     && curl -fsSL https://sentry.io/get-cli/ | bash
