@@ -29,8 +29,7 @@ from libs import identity
 from libs.cost_explorer import CostExplorer
 
 BASE_DIR = (
-    subprocess.Popen(["git", "rev-parse", "--show-toplevel"],
-                     stdout=subprocess.PIPE)
+    subprocess.Popen(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
     .communicate()[0]
     .rstrip()
     .decode("utf-8")
@@ -68,8 +67,7 @@ class Bill:
 
         self.aws_profile = args.profile
         now = datetime.datetime.utcnow()
-        self.start = (now - datetime.timedelta(days=args.days)
-                      ).strftime("%Y-%m-%d")
+        self.start = (now - datetime.timedelta(days=args.days)).strftime("%Y-%m-%d")
         self.end = now.strftime("%Y-%m-%d")
         self.report_path = (
             BASE_DIR + "/cost-explorer/generated/" + self.aws_profile + "/"
