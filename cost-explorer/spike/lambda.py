@@ -451,7 +451,6 @@ class CostExplorer:
             BASE_DIR + "/cost-explorer/generated/" + os.environ.get("AWS_VAULT") + "/"
         )
         os.chdir(REPORT_DIR)
-        print("---------> " + REPORT_DIR)
         writer = pd.ExcelWriter("cost_explorer_report.xlsx", engine="xlsxwriter")
         workbook = writer.book
         for report in self.reports:
