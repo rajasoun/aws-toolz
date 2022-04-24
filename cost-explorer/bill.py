@@ -29,7 +29,8 @@ from libs import identity
 from libs.cost_explorer import CostExplorer
 
 BASE_DIR = (
-    subprocess.Popen(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
+    subprocess.Popen(["git", "rev-parse", "--show-toplevel"],
+                     stdout=subprocess.PIPE)
     .communicate()[0]
     .rstrip()
     .decode("utf-8")
@@ -67,7 +68,8 @@ class Bill:
 
         self.aws_profile = args.profile
         now = datetime.datetime.utcnow()
-        self.start = (now - datetime.timedelta(days=args.days)).strftime("%Y-%m-%d")
+        self.start = (now - datetime.timedelta(days=args.days)
+                      ).strftime("%Y-%m-%d")
         self.end = now.strftime("%Y-%m-%d")
         self.report_path = (
             BASE_DIR + "/cost-explorer/generated/" + self.aws_profile + "/"
@@ -133,16 +135,18 @@ def main():
         include_support=True,
         report_type="chart",
     )
-    # costexplorer.add_report(
-    #     bill.report_path,
-    #     report_name="TotalInclCreditsChange",
-    #     group_by=[],
-    #     report_style="Change",
-    #     no_credits=True,
-    # )
-    reports = format_report(costexplorer)
-    print_report(reports)
+    costexplorer.add_report(
+        bill.report_path,
+        report_name="Services",
+        group_by=[{"Type": "DIMENSION", "Key": "SERVICE"}],
+        report_style="Total",
+        include_support=True,
+    )
+    # reports = format_report(costexplorer)
+    # print_report(reports)
     costexplorer.generate_excel(bill.report_path, current_month=False)
+    print("Reports Generation Done !!!")
+    print("Available at " + bill.report_path)
 
 
 if __name__ == "__main__":

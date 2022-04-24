@@ -26,8 +26,7 @@ import boto3
 import pandas as pd
 
 # Required to load modules from vendored subfolder (for clean development env)
-sys.path.append(os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), "./vendored"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./vendored"))
 
 # GLOBALS
 ACCOUNT_LABEL = os.environ.get("ACCOUNT_LABEL")
@@ -43,8 +42,7 @@ else:
 LAST_MONTH_ONLY = os.environ.get("LAST_MONTH_ONLY")
 
 BASE_DIR = (
-    subprocess.Popen(["git", "rev-parse", "--show-toplevel"],
-                     stdout=subprocess.PIPE)
+    subprocess.Popen(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
     .communicate()[0]
     .rstrip()
     .decode("utf-8")
@@ -259,11 +257,9 @@ class CostExplorer:
                 key = i["Keys"][0]
                 if key in self.accounts:
                     key = self.accounts[key][ACCOUNT_LABEL]
-                row.update(
-                    {key: float(i["Metrics"]["UnblendedCost"]["Amount"])})
+                row.update({key: float(i["Metrics"]["UnblendedCost"]["Amount"])})
             if not item["Groups"]:
-                row.update(
-                    {"Total": float(item["Total"]["UnblendedCost"]["Amount"])})
+                row.update({"Total": float(item["Total"]["UnblendedCost"]["Amount"])})
             rows.append(row)
 
         data_frame = pd.DataFrame(rows)
@@ -303,8 +299,7 @@ class CostExplorer:
             worksheet = writer.sheets[report["Name"]]
             if report["Type"] == "chart":
                 # Create a chart object.
-                chart = workbook.add_chart(
-                    {"type": "column", "subtype": "stacked"})
+                chart = workbook.add_chart({"type": "column", "subtype": "stacked"})
                 chartend = 12
                 if current_month:
                     chartend = 13
@@ -318,8 +313,7 @@ class CostExplorer:
                     )
                 chart.set_y_axis({"label_position": "low"})
                 chart.set_x_axis({"label_position": "low"})
-                worksheet.insert_chart(
-                    "O2", chart, {"x_scale": 2.0, "y_scale": 2.0})
+                worksheet.insert_chart("O2", chart, {"x_scale": 2.0, "y_scale": 2.0})
         writer.save()
 
 
