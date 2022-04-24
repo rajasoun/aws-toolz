@@ -8,14 +8,15 @@ __author__ = "Raja Soundaramourty"
 __version__ = "0.1.0"
 __license__ = "MIT No Attribution"
 
+#system
 import os
 import sys
 import argparse
-
+#utils
 import traceback
 import json
 from collections import namedtuple
-
+#aws
 from botocore.exceptions import ClientError
 import botocore.session
 import botocore

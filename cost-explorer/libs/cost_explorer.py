@@ -10,17 +10,17 @@ __author__ = "Raja Soundaramourty"
 __version__ = "0.1.0"
 __license__ = "MIT No Attribution"
 
+#system 
 import os
 import sys
 import subprocess
-
+#utils 
 import datetime
 import logging
-
 from dateutil.relativedelta import relativedelta
-
+#aws
 import boto3
-
+#data 
 import pandas as pd
 
 # Required to load modules from vendored subfolder (for clean development env)
@@ -100,8 +100,9 @@ class CostExplorer:
         self.accounts = {}
 
     def addReport(self, Name="Default", GroupBy=[{"Type": "DIMENSION", "Key": "SERVICE"}, ],
-                  Style='Total', NoCredits=True, CreditsOnly=False, RefundOnly=False, UpfrontOnly=False, IncSupport=False, IncTax=True):
-        type = 'table'  # other option chart
+                  Style='Total', NoCredits=True, CreditsOnly=False, 
+                  RefundOnly=False, UpfrontOnly=False, 
+                  IncSupport=False, IncTax=True,type="table"):
         results = []
         if not NoCredits:
             response = self.client.get_cost_and_usage(
@@ -226,13 +227,39 @@ class CostExplorer:
                             df.at[index, i] = 0
                 lastindex = index
         df = df.sort_values(by=['date'], ascending=False)
-        self.reports.append({'Name': Name, 'Data': df, 'Type': type})
+        self.reports.append({'Name': Name, 'Data': df.T, 'Type': type})
         self.csv_file_name = BASE_DIR + "/cost-explorer/generated/" \
             + Name.lower() + ".csv"
         df.to_csv(self.csv_file_name, sep=',', encoding='utf-8')
 
+    def generate_excel(self, CURRENT_MONTH=False):
+            excel_file = BASE_DIR + "/cost-explorer/generated/report.xlsx"
+            writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+            workbook = writer.book
+            for report in self.reports:
+                print(report['Name'], report['Type'])
+                report['Data'].to_excel(writer, sheet_name=report['Name'])
+                worksheet = writer.sheets[report['Name']]
+                if report['Type'] == 'chart':
+                    # Create a chart object.
+                    chart = workbook.add_chart(
+                        {'type': 'column', 'subtype': 'stacked'})
+                    chartend = 12
+                    if CURRENT_MONTH:
+                        chartend = 13
+                    for row_num in range(1, len(report['Data']) + 1):
+                        chart.add_series({
+                            'name':       [report['Name'], row_num, 0],
+                            'categories': [report['Name'], 0, 1, 0, chartend],
+                            'values':     [report['Name'], row_num, 1, row_num, chartend],
+                        })
+                    chart.set_y_axis({'label_position': 'low'})
+                    chart.set_x_axis({'label_position': 'low'})
+                    worksheet.insert_chart(
+                        'O2', chart, {'x_scale': 2.0, 'y_scale': 2.0})
+            writer.save()
 
-def main_handler(event=None, context=None):
+def main(event=None, context=None):
     costexplorer = CostExplorer(CurrentMonth=False)
     # Default addReport has filter to remove Support / Credits / Refunds / UpfrontRI / Tax
     # Overall Billing Reports
@@ -242,8 +269,9 @@ def main_handler(event=None, context=None):
         print("\n" + report['Name'])
         df = pd.read_csv(costexplorer.csv_file_name)
         print(df)
+    costexplorer.generate_excel(CURRENT_MONTH=False)
     return "Report Generated"
 
 
 if __name__ == '__main__':
-    main_handler()
+    main()

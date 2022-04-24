@@ -16,20 +16,15 @@ import logging
 
 # AWS
 import boto3.session
-# WebEx Team
-from requests_toolbelt import MultipartEncoder
-import requests
 # .env File Loading
 from dotenv import load_dotenv
-
-# Data Handling
+# Data
 import pandas as pd
 from tabulate import tabulate
 
 # Import Local Libraries
 from libs import identity
 from libs.cost_explorer import CostExplorer
-from libs.excel import Excel
 
 
 class Bill:
@@ -69,8 +64,9 @@ class Bill:
         self.start = (now - datetime.timedelta(days=args.days)
                       ).strftime('%Y-%m-%d')
         self.end = now.strftime('%Y-%m-%d')
+        load_dotenv()
 
-    def getAwsSession(self, aws_profile):
+    def get_aws_session(self, aws_profile):
         """Get AWS Session"""
         session = boto3.session.Session(profile_name=aws_profile,
                                         aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
@@ -90,18 +86,17 @@ def format_report(costexplorer):
 
 def main():
     bill = Bill()
-    session = bill.getAwsSession(bill.aws_profile)
+    session = bill.get_aws_session(bill.aws_profile)
     whoami_info = identity.whoami(session=session)
     print(identity.format_whoami(whoami_info))
     client = session.client('ce', 'us-east-1')
     costexplorer = CostExplorer(client, CurrentMonth=False)
     costexplorer.addReport(Name="Total", GroupBy=[],
-                           Style='Total', IncSupport=True)
+                           Style='Total', IncSupport=True,type='chart')
     reports = format_report(costexplorer)
     for report in reports:
         print(report)
-    excel = Excel()
-    excel.generate(reports)
+    costexplorer.generate_excel(CURRENT_MONTH=False)
 
 
 if __name__ == '__main__':
