@@ -75,6 +75,7 @@ class Bill:
 
 
 def format_report(costexplorer):
+    """Format Report Array"""
     lines = []
     for report in costexplorer.reports:
         print("\n" + report['Name'])
@@ -85,6 +86,7 @@ def format_report(costexplorer):
 
 
 def main():
+    """Entry Point"""
     bill = Bill()
     session = bill.get_aws_session(bill.aws_profile)
     whoami_info = identity.whoami(session=session)
@@ -92,7 +94,7 @@ def main():
     client = session.client('ce', 'us-east-1')
     costexplorer = CostExplorer(client, CurrentMonth=False)
     costexplorer.addReport(Name="Total", GroupBy=[],
-                           Style='Total', IncSupport=True,type='chart')
+                           Style='Total', IncSupport=True, type='chart')
     reports = format_report(costexplorer)
     for report in reports:
         print(report)
