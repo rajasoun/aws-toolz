@@ -437,7 +437,21 @@ class CostExplorer:
 
     def generateExcel(self):
         # Create a Pandas Excel writer using XlsxWriter as the engine.\
-        os.chdir("/tmp")
+        import subprocess
+
+        BASE_DIR = (
+            subprocess.Popen(
+                ["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE
+            )
+            .communicate()[0]
+            .rstrip()
+            .decode("utf-8")
+        )
+        REPORT_DIR = (
+            BASE_DIR + "/cost-explorer/generated/" + os.environ.get("AWS_VAULT") + "/"
+        )
+        os.chdir(REPORT_DIR)
+        print("---------> " + REPORT_DIR)
         writer = pd.ExcelWriter("cost_explorer_report.xlsx", engine="xlsxwriter")
         workbook = writer.book
         for report in self.reports:
