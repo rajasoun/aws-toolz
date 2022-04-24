@@ -67,14 +67,11 @@ TAG_KEY = os.environ.get("TAG_KEY")
 
 
 class CostExplorer:
-    """Retrieves BillingInfo checks from CostExplorer API
-    >>> costexplorer = CostExplorer()
-    >>> costexplorer.addReport(GroupBy=[{"Type": "DIMENSION","Key": "SERVICE"}])
-    >>> costexplorer.generateExcel()
-    """
+    """Retrieves BillingInfo checks from CostExplorer API"""
 
     def __init__(self, client=None, CurrentMonth=False):
         # Array of reports ready to be output to Excel.
+        self.csv_file_name = None
         self.reports = []
         self.client = client
         if self.client is None:
@@ -111,9 +108,7 @@ class CostExplorer:
         self,
         report_dir,
         Name="Default",
-        GroupBy=[
-            {"Type": "DIMENSION", "Key": "SERVICE"},
-        ],
+        GroupBy=None,
         Style="Total",
         NoCredits=True,
         CreditsOnly=False,
@@ -123,6 +118,11 @@ class CostExplorer:
         IncTax=True,
         type="table",
     ):
+        """Add Report"""
+        if GroupBy is None:
+            GroupBy = [
+                {"Type": "DIMENSION", "Key": "SERVICE"},
+            ]
         results = []
         if not NoCredits:
             response = self.client.get_cost_and_usage(
@@ -307,16 +307,19 @@ class CostExplorer:
         writer.save()
 
 
-def main(event=None, context=None):
+def main():
     costexplorer = CostExplorer(CurrentMonth=False)
+    report_path = BASE_DIR + "/cost-explorer/generated/" + "secops-experiments" + "/"
     # Default addReport has filter to remove Support / Credits / Refunds / UpfrontRI / Tax
     # Overall Billing Reports
-    costexplorer.addReport(Name="Total", GroupBy=[], Style="Total", IncSupport=True)
+    costexplorer.addReport(
+        report_path, Name="Total", GroupBy=[], Style="Total", IncSupport=True
+    )
     for report in costexplorer.reports:
         print("\n" + report["Name"])
         df = pd.read_csv(costexplorer.csv_file_name)
         print(df)
-    costexplorer.generate_excel(CURRENT_MONTH=False)
+    costexplorer.generate_excel(report_path, CURRENT_MONTH=False)
     return "Report Generated"
 
 
