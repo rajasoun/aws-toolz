@@ -150,8 +150,28 @@ def whoami(session=None, disable_account_alias: object = False):
     return WhoamiInfo(**data)
 
 
-def get_identity(args):
-    """Get Caller Identity"""
+def handle_error(args, error):
+    """Handel Error"""
+    if args.debug:
+        traceback.print_exc()
+    err_cls = type(error)
+    err_cls_str = err_cls.__name__
+    if err_cls.__module__ != "builtins":
+        format_msg = "{}.{}"
+        err_cls_str = format_msg.format(err_cls.__module__, err_cls_str)
+    msg = "ERROR [{}]: {}\n"
+    sys.stderr.write(msg.format(err_cls_str, error))
+    sys.exit(1)
+
+
+def main():
+    """Entry Point"""
+    args, parser = parse_args()
+
+    if args.version:
+        print(__version__)
+        parser.exit()
+
     try:
         session = botocore.session.Session(profile=args.profile)
         disable_account_alias = os.environ.get("AWS_WHOAMI_DISABLE_ACCOUNT_ALIAS", "")
@@ -168,27 +188,7 @@ def get_identity(args):
         else:
             print(format_whoami(info))
     except botocore.exceptions.NoCredentialsError as error:
-        if args.debug:
-            traceback.print_exc()
-        err_cls = type(error)
-        err_cls_str = err_cls.__name__
-        if err_cls.__module__ != "builtins":
-            format_msg = "{}.{}"
-            err_cls_str = format_msg.format(err_cls.__module__, err_cls_str)
-        msg = "ERROR [{}]: {}\n"
-        sys.stderr.write(msg.format(err_cls_str, error))
-        sys.exit(1)
-
-
-def main():
-    """Entry Point"""
-    args, parser = parse_args()
-
-    if args.version:
-        print(__version__)
-        parser.exit()
-
-    get_identity(args)
+        handle_error(args, error)
 
 
 if __name__ == "__main__":
