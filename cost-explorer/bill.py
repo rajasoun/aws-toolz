@@ -13,6 +13,7 @@ import os
 import argparse
 import datetime
 import logging
+import subprocess
 
 # AWS
 import boto3.session
@@ -27,6 +28,13 @@ from tabulate import tabulate
 # Import Local Libraries
 from libs import identity
 from libs.cost_explorer import CostExplorer
+
+BASE_DIR = (
+    subprocess.Popen(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
+    .communicate()[0]
+    .rstrip()
+    .decode("utf-8")
+)
 
 
 class Bill:
@@ -67,6 +75,9 @@ class Bill:
         now = datetime.datetime.utcnow()
         self.start = (now - datetime.timedelta(days=args.days)).strftime("%Y-%m-%d")
         self.end = now.strftime("%Y-%m-%d")
+        self.report_path = (
+            BASE_DIR + "/cost-explorer/generated/" + self.aws_profile + "/"
+        )
         load_dotenv()
 
     def get_aws_session(self, aws_profile):
@@ -77,6 +88,15 @@ class Bill:
             aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
         )
         return session
+
+
+def create_dir_for_reports(path):
+    """Create Dir if not Exists"""
+    # Check whether the specified path exists or not
+    if not os.path.exists(path):
+        # Create a new directory because it does not exist
+        os.makedirs(path)
+        print(path + " directory for reports is created!")
 
 
 def format_report(costexplorer):
@@ -104,17 +124,23 @@ def print_report(reports):
 def main():
     """Entry Point"""
     bill = Bill()
+    create_dir_for_reports(bill.report_path)
     session = bill.get_aws_session(bill.aws_profile)
     whoami_info = identity.whoami(session=session)
     print(identity.format_whoami(whoami_info))
     client = session.client("ce", "us-east-1")
     costexplorer = CostExplorer(client, CurrentMonth=False)
     costexplorer.addReport(
-        Name="Total", GroupBy=[], Style="Total", IncSupport=True, type="chart"
+        bill.report_path,
+        Name="Total",
+        GroupBy=[],
+        Style="Total",
+        IncSupport=True,
+        type="chart",
     )
     reports = format_report(costexplorer)
     print_report(reports)
-    costexplorer.generate_excel(CURRENT_MONTH=False)
+    costexplorer.generate_excel(bill.report_path, CURRENT_MONTH=False)
 
 
 if __name__ == "__main__":
