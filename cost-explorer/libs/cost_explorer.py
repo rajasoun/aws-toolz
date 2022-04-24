@@ -3,6 +3,7 @@
 """
 Cost Explorer Report
 """
+# pylint: skip-file
 
 __author__ = "Raja Soundaramourty"
 __version__ = "0.1.0"
@@ -25,7 +26,8 @@ import boto3
 import pandas as pd
 
 # Required to load modules from vendored subfolder (for clean development env)
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./vendored"))
+sys.path.append(os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), "./vendored"))
 
 # GLOBALS
 ACCOUNT_LABEL = os.environ.get("ACCOUNT_LABEL")
@@ -41,7 +43,8 @@ else:
 LAST_MONTH_ONLY = os.environ.get("LAST_MONTH_ONLY")
 
 BASE_DIR = (
-    subprocess.Popen(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
+    subprocess.Popen(["git", "rev-parse", "--show-toplevel"],
+                     stdout=subprocess.PIPE)
     .communicate()[0]
     .rstrip()
     .decode("utf-8")
@@ -139,7 +142,7 @@ class CostExplorer:
         else:
             report_filter = {"And": []}
 
-            Dimensions = {
+            report_dimensions = {
                 "Not": {
                     "Dimensions": {
                         "Key": "RECORD_TYPE",
@@ -150,7 +153,7 @@ class CostExplorer:
             if (
                 INC_SUPPORT or include_support
             ):  # If global set for including support, we dont exclude it
-                Dimensions = {
+                report_dimensions = {
                     "Not": {
                         "Dimensions": {
                             "Key": "RECORD_TYPE",
@@ -159,7 +162,7 @@ class CostExplorer:
                     }
                 }
             if credits_only:
-                Dimensions = {
+                report_dimensions = {
                     "Dimensions": {
                         "Key": "RECORD_TYPE",
                         "Values": [
@@ -168,7 +171,7 @@ class CostExplorer:
                     }
                 }
             if refund_only:
-                Dimensions = {
+                report_dimensions = {
                     "Dimensions": {
                         "Key": "RECORD_TYPE",
                         "Values": [
@@ -177,7 +180,7 @@ class CostExplorer:
                     }
                 }
             if upfront_only:
-                Dimensions = {
+                report_dimensions = {
                     "Dimensions": {
                         "Key": "RECORD_TYPE",
                         "Values": [
@@ -186,12 +189,12 @@ class CostExplorer:
                     }
                 }
             # If filtering Record_Types and Tax excluded
-            if "Not" in Dimensions and (not INC_TAX or not include_tax):
-                Dimensions["Not"]["Dimensions"]["Values"].append("Tax")
+            if "Not" in report_dimensions and (not INC_TAX or not include_tax):
+                report_dimensions["Not"]["Dimensions"]["Values"].append("Tax")
 
-            tagValues = None
+            tag_values = None
             if TAG_KEY:
-                tagValues = self.client.get_tags(
+                tag_values = self.client.get_tags(
                     SearchString=TAG_VALUE_FILTER,
                     TimePeriod={
                         "Start": self.start.isoformat(),
@@ -200,13 +203,15 @@ class CostExplorer:
                     TagKey=TAG_KEY,
                 )
 
-            if tagValues:
-                report_filter["And"].append(Dimensions)
-                if len(tagValues["Tags"]) > 0:
-                    Tags = {"Tags": {"Key": TAG_KEY, "Values": tagValues["Tags"]}}
-                    report_filter["And"].append(Tags)
+            if tag_values:
+                report_filter["And"].append(report_dimensions)
+                if len(tag_values["Tags"]) > 0:
+                    report_tags = {
+                        "Tags": {"Key": TAG_KEY, "Values": tag_values["Tags"]}
+                    }
+                    report_filter["And"].append(report_tags)
             else:
-                report_filter = Dimensions.copy()
+                report_filter = report_dimensions.copy()
 
             response = self.client.get_cost_and_usage(
                 TimePeriod={
@@ -225,7 +230,7 @@ class CostExplorer:
             results.extend(response["ResultsByTime"])
 
             while "nextToken" in response:
-                nextToken = response["nextToken"]
+                next_token = response["nextToken"]
                 response = self.client.get_cost_and_usage(
                     TimePeriod={
                         "Start": self.start.isoformat(),
@@ -236,48 +241,56 @@ class CostExplorer:
                         "UnblendedCost",
                     ],
                     GroupBy=group_by,
-                    NextPageToken=nextToken,
+                    NextPageToken=next_token,
                 )
 
                 results.extend(response["ResultsByTime"])
                 if "nextToken" in response:
-                    nextToken = response["nextToken"]
+                    next_token = response["nextToken"]
                 else:
-                    nextToken = False
+                    next_token = False
         rows = []
         sort = ""
-        for v in results:
-            row = {"date": v["TimePeriod"]["Start"]}
-            sort = v["TimePeriod"]["Start"]
-            for i in v["Groups"]:
+        for item in results:
+            row = {"date": item["TimePeriod"]["Start"]}
+            # sort = item["TimePeriod"]["Start"]
+            sort = ["date"]
+            for i in item["Groups"]:
                 key = i["Keys"][0]
                 if key in self.accounts:
                     key = self.accounts[key][ACCOUNT_LABEL]
-                row.update({key: float(i["Metrics"]["UnblendedCost"]["Amount"])})
-            if not v["Groups"]:
-                row.update({"Total": float(v["Total"]["UnblendedCost"]["Amount"])})
+                row.update(
+                    {key: float(i["Metrics"]["UnblendedCost"]["Amount"])})
+            if not item["Groups"]:
+                row.update(
+                    {"Total": float(item["Total"]["UnblendedCost"]["Amount"])})
             rows.append(row)
 
-        df = pd.DataFrame(rows)
-        df.set_index("date", inplace=True)
-        df = df.fillna(0.0)
+        data_frame = pd.DataFrame(rows)
+        data_frame.set_index("date", inplace=True)
+        data_frame = data_frame.fillna(0.0)
 
         if report_style == "Change":
-            dfc = df.copy()
+            dfc = data_frame.copy()
             lastindex = None
-            for index, row in df.iterrows():
+            for index, row in data_frame.iterrows():
                 if lastindex:
                     for i in row.index:
                         try:
-                            df.at[index, i] = dfc.at[index, i] - dfc.at[lastindex, i]
-                        except:
-                            logging.exception("Error")
-                            df.at[index, i] = 0
+                            data_frame.at[index, i] = (
+                                dfc.at[index, i] - dfc.at[lastindex, i]
+                            )
+                        except IndexError:
+                            logging.critical("Error")
+                            data_frame.at[index, i] = 0
                 lastindex = index
-        df = df.sort_values(by=["date"], ascending=False)
-        self.reports.append({"Name": report_name, "Data": df.T, "Type": report_type})
+        # data_frame = data_frame.sort_values(by=["date"], ascending=False)
+        data_frame = data_frame.sort_values(sort, ascending=False)
+        self.reports.append(
+            {"Name": report_name, "Data": data_frame.T, "Type": report_type}
+        )
         self.csv_file_name = report_dir + report_name.lower() + ".csv"
-        df.to_csv(self.csv_file_name, sep=",", encoding="utf-8")
+        data_frame.to_csv(self.csv_file_name, sep=",", encoding="utf-8")
 
     def generate_excel(self, report_dir, current_month=False):
         """Generate Excel Report"""
@@ -290,7 +303,8 @@ class CostExplorer:
             worksheet = writer.sheets[report["Name"]]
             if report["Type"] == "chart":
                 # Create a chart object.
-                chart = workbook.add_chart({"type": "column", "subtype": "stacked"})
+                chart = workbook.add_chart(
+                    {"type": "column", "subtype": "stacked"})
                 chartend = 12
                 if current_month:
                     chartend = 13
@@ -304,7 +318,8 @@ class CostExplorer:
                     )
                 chart.set_y_axis({"label_position": "low"})
                 chart.set_x_axis({"label_position": "low"})
-                worksheet.insert_chart("O2", chart, {"x_scale": 2.0, "y_scale": 2.0})
+                worksheet.insert_chart(
+                    "O2", chart, {"x_scale": 2.0, "y_scale": 2.0})
         writer.save()
 
 
