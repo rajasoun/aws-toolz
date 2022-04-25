@@ -368,13 +368,19 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 	git_hub_login token
 	init_debug
 	EXIT_CODE="$?"
-	log_sentry "$EXIT_CODE" "DevContainer Initialization"
+	log_sentry "$EXIT_CODE" "DevContainer Initialization for Dev"
 	check_git_config
 	rm -fr $(git rev-parse --show-toplevel)/.dev
 	echo -e "${GREEN}Help : dev-help${NC}\n"
 else 
 	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}\n"
-	echo -e "${GREEN}Help : aws-help${NC}\n"
+	if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
+		prompt "${ORANGE} Starting gsetup ${NC}"
+		gsetup
+	fi
+	init_debug
+	EXIT_CODE="$?"
+	log_sentry "$EXIT_CODE" "DevContainer Initialization for ops"
 fi
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
