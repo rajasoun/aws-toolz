@@ -295,3 +295,6 @@ id_rsa.pub
 aws-nuke.yml
 *.xlsx
 *.csv
+.dev
+.ops
+
