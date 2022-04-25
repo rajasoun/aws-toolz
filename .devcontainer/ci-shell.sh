@@ -87,13 +87,14 @@ function launch(){
 }
 
 ENV=$1
+
 if [ "$ENV" = "dev" ]; then
     echo -e "\n${BOLD}${UNDERLINE}CI Shell For Dev${NC}"
     _configure_ssh_gitconfig
     check_and_make_first_release_if_not_done
-    make -f .devcontainer/Makefile prerequisite
+    make -f .devcontainer/Makefile tools-prerequisite
 else
     echo -e "\n${BOLD}${UNDERLINE}CI Shell For Ops${NC}"
-    echo "Strings are not equal."
 fi
+
 launch
