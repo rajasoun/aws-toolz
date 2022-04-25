@@ -357,10 +357,8 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 	check_git_config
 	rm -fr $(git rev-parse --show-toplevel)/.dev
 else 
-	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}"
-	ci-cd tools-prerequisite
-	echo "Build -> ci-cd build"
-	echo "Push  -> ci-cd push"
+	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}\n"
+	echo -e "Help : ghelp"
 fi
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
