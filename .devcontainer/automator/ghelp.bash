@@ -371,9 +371,10 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 	log_sentry "$EXIT_CODE" "DevContainer Initialization"
 	check_git_config
 	rm -fr $(git rev-parse --show-toplevel)/.dev
+	echo -e "${GREEN}Help : dev-help${NC}\n"
 else 
 	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}\n"
-	echo -e "Help : ghelp"
+	echo -e "${GREEN}Help : ops-help${NC}\n"
 fi
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
