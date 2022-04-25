@@ -87,7 +87,7 @@ function launch(){
 }
 
 ENV=$1
-if [ -z ENV ];then 
+if [ $ENV = "dev" ];then 
     echo -e "\n${BOLD}${UNDERLINE}SSH & Git Configurations${NC}"
     _configure_ssh_gitconfig
     check_and_make_first_release_if_not_done
