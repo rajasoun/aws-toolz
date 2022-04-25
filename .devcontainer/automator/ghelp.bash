@@ -350,6 +350,7 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 		prompt "${ORANGE} Starting gsetup ${NC}"
 		gsetup
 	fi
+	rm -fr $(git rev-parse --show-toplevel)/.dev
 fi
 
 git_hub_login token

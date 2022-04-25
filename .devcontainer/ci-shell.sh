@@ -89,17 +89,15 @@ function launch(){
 ENV=$1
 
 if [ "$ENV" = "dev" ]; then
+    echo "$(date)" > "$(git rev-parse --show-toplevel)/.dev"
     echo -e "\n${BOLD}${UNDERLINE}CI Shell For Dev${NC}"
     _configure_ssh_gitconfig
     check_and_make_first_release_if_not_done
     make -f .devcontainer/Makefile tools-prerequisite
     rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
-    echo "$(date)" > "$(git rev-parse --show-toplevel)/.dev"
 else
     echo -e "\n${BOLD}${UNDERLINE}CI Shell For Ops${NC}"
     _git_config
-    rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.dev"
-    echo "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
 fi
 
 launch
