@@ -42,6 +42,7 @@ $ ci-cd config-prerequisite
 
 From Terminal Window.
 ```sh
+$ touch .dev
 $ source .devcontainer/automator/ghelp.bash
 $ ci-cd tools-prerequisite
 $ ci-cd build
@@ -51,7 +52,7 @@ $ ci-cd build
 
 From Terminal Window.
 ```sh
-$ .devcontainer/ci-shell.sh
+$ .devcontainer/ci-shell.sh dev
 $ devcontainer_signature
 $ exit
 $ ci-cd build
