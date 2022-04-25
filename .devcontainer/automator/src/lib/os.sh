@@ -245,7 +245,11 @@ function _generate_ssh_keys() {
     debug "SSH Keys Generated Successfully"
     _copy_to_clipboard "$PUBLIC_KEY"
     _print_details
-    GIT=$(dotenv get GITHUB_URL)
+    if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
+      GIT=$(dotenv get GITHUB_URL)
+    else 
+      GIT=$(cat .env.sample | grep GITHUB_URL)
+    fi
     _check_connection "$GIT" 443
     _prompt_confirm "Is SSH Public Added to GitHub"
     git-ssh-fix
