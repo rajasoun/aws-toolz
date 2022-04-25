@@ -29,13 +29,12 @@ msys*)
 	;;
 esac
 
-function ghelp() {
+function dev_help() {
 	clear
 	echo -e "
 - - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - -
        			${BOLD}Shortcuts${NC}
 - - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - -
-ghelp 		 - 	List all Git Convenience commands and prompt symbols
 gsetup		 - 	Install Git Flow, pre-commit & husky hooks
 ghooks		 - 	Install only pre-commit & husky hooks
 glogin		 - 	Web Login to GitHub
@@ -46,10 +45,20 @@ code-churn	 - 	Frequency of change to code base
 pretty		 - 	Code prettier
 precommit	 - 	Run Pre-commit checks on all Files
 ci-cd		 - 	CI/CD for Devcontainer
+alias		 - 	List all Alias
+- - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - - -
+"
+}
+
+function ops_help() {
+	clear
+	echo -e "
+- - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - -
+       			${BOLD}Shortcuts${NC}
+- - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - -
 aws-env		 - 	Wrapper to aws-vault
 aws-whoami	 - 	Prints AWS Identity of the current aws-vault env
 aws-bill	 - 	Generates AWS Bill for the given aws-vault Profile
-alias		 - 	List all Alias
 - - - - - - - - - - - - - -- - - - - - - - - - - - - -- - - - - - - - - -
 "
 }
@@ -310,6 +319,12 @@ function aws_bill(){
 		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_BILL_CMD
 	fi
 }
+
+#-------------------------------------------------------------
+# Help Alias Commands
+#-------------------------------------------------------------
+alias aws-help='ops_help'
+alias dev-help='ops_help'
 
 #-------------------------------------------------------------
 # Git Alias Commands
