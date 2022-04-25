@@ -39,6 +39,55 @@ function _docker() {
   return 0
 }
 
+function _populate_dot_env() {
+	prompt "Populating .env File"
+	if [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
+		mv .env .env.bak
+	fi
+	cp .env.sample .env
+
+	prompt "${BLUE}To Get the GitHub Key  ${NC}"
+	prompt "${ORANGE} Visit https://www.$(dotenv -f .env.sample get GITHUB_URL)/settings/tokens ${NC}"
+	prompt "${BOLD}Enter Git Token: ${NC}"
+	read -r GITTOKEN
+	_file_replace_text "1__________FILL_ME__________1" "$GITTOKEN" "$(git rev-parse --show-toplevel)/.env"
+
+	prompt "${BLUE}To Get the GG Key - Register to Git Guardian ${NC}"
+	prompt "${ORANGE} Visit $(dotenv -f .env.sample get GITGUARDIAN_URL) ${NC}"
+	prompt "${BOLD}Enter Git Guardian API Key: ${NC}"
+	read -r GG_KEY
+	_file_replace_text "2__________FILL_ME__________2" "$GG_KEY" "$(git rev-parse --show-toplevel)/.env"
+	_check_gg_api
+
+	prompt "${BLUE}To Get the Sentry DSN  ${NC}"
+	prompt "${ORANGE} Visit $(dotenv -f .env.sample get SENTRY_URL) ${NC}"
+	prompt "${BOLD}Enter Sentry DSN: ${NC}"
+	read -r SENTRYDSN
+	_file_replace_text "3__________FILL_ME__________3" "$SENTRYDSN" "$(git rev-parse --show-toplevel)/.env"
+}
+
+function gsetup() {
+	if [ "$(git rev-parse --is-inside-work-tree)" = true ]; then
+		if [[ $(git diff --stat) != '' ]]; then
+			prompt "${RED} Git Working Tree Not Clean. Aborting setup !!! ${NC}"
+			EXIT_CODE=1
+			log_sentry "$EXIT_CODE" "gsetup | Git Working Tree Not Clean. Aborting setup"
+		else
+			start=$(date +%s)
+			prompt "Git Working Tree Clean"
+			cp .env .env.bak
+			_install_git_hooks || prompt "_install_git_hooks ❌"
+			_populate_dot_env || prompt "_populate_dot_env ❌"
+			end=$(date +%s)
+			runtime=$((end - start))
+			prompt "gsetup DONE in $(_display_time $runtime)"
+			/workspaces/tests/system/e2e_tests.sh
+			EXIT_CODE="$?"
+			log_sentry "$EXIT_CODE" "gsetup "
+		fi
+	fi
+}
+
 # Check if first release is made by
 # if .devcontainer/version.txt exists
 function check_and_make_first_release_if_not_done(){
@@ -85,6 +134,11 @@ function launch(){
             -w "/workspaces/$GIT_REPO_NAME" \
             "$name:$VERSION"
 }
+
+if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
+	prompt "${ORANGE} Starting gsetup ${NC}"
+	gsetup
+fi
 
 echo -e "\n${BOLD}${UNDERLINE}SSH & Git Configurations${NC}"
 _configure_ssh_gitconfig
