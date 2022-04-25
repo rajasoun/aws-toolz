@@ -345,8 +345,7 @@ alias ci-cd="make -f .devcontainer/Makefile $@"
 alias code-churn="code_churn"
 
 if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
-	echo -e "${BOLD} Environment : dev"
-	_prompt_confirm 
+	echo -e "${BOLD}Environment : ${UNDERLINE}dev${NC}"
 	if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
 		prompt "${ORANGE} Starting gsetup ${NC}"
 		gsetup
