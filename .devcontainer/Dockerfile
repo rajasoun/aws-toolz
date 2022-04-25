@@ -47,9 +47,38 @@ RUN set -ex \
         https://${CLOUD_NUKE_URL}/${CLOUD_NUKE_VERSION}/cloud-nuke_linux_amd64 \
     && chmod 755 /usr/local/bin/cloud-nuke
 
+# aws-nuke CLI
+ENV AWS_NUKE_URL=github.com/rebuy-de/aws-nuke/releases/download
+ENV AWS_NUKE_VERSION=v2.17.0
+ENV AWS_NUKE_EXEC=aws-nuke-${AWS_NUKE_VERSION}-linux-amd64
+
+RUN set -ex \
+    && wget -c https://${AWS_NUKE_URL}/$AWS_NUKE_VERSION/${AWS_NUKE_EXEC}.tar.gz -O - | \
+       tar -xz -C /tmp
+RUN set -ex \ 
+    && mv /tmp/${AWS_NUKE_EXEC} /usr/local/bin/aws-nuke 
+
+# awless CLI
+ENV AWS_LESS_URL=github.com/wallix/awless/releases/download
+ENV AWS_LESS_VERSION=v0.1.11
+ENV AWS_LESS_EXEC=awless
+
+RUN set -ex \
+    && wget -c https://${AWS_LESS_URL}/$AWS_LESS_VERSION/${AWS_LESS_EXEC}-linux-amd64.tar.gz -O - | \
+       tar -xz -C /tmp
+RUN set -ex \ 
+    && mv /tmp/${AWS_LESS_EXEC} /usr/local/bin/awless 
+
 # Sentry CLI
 RUN set -ex \
     && curl -fsSL https://sentry.io/get-cli/ | bash
+
+# syft & grype support
+ENV SYFT_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/syft/main/install.sh"
+ENV GRYPE_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/grype/main/install.sh"
+RUN set -ex \
+    && curl -sSfL "$SYFT_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin \
+    && curl -sSfL "$GRYPE_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin
 
 # oh-my-zsh plugins
 # 	zsh-autosuggestions - suggests commands as you type based on history and completions
@@ -79,4 +108,5 @@ RUN set -ex \
     && apt-get clean --assume-yes \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/library-scripts \
-    && rm -rf /tmp/packages-tmp
+    && rm -rf /tmp/packages-tmp \
+    && rm -rf /tmp/*

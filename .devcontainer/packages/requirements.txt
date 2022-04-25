@@ -2,3 +2,12 @@ aws-audit==0.1.0
 pre-commit==2.17.0
 commitizen==2.21.2
 python-dotenv[cli]==0.20.0
+boto3==1.21.44
+botocore==1.24.44
+python-dotenv[cli]==0.20.0
+tabulate==0.8.9
+pandas==1.4.2
+XlsxWriter==3.0.3
+python-dateutil==2.8.2
+cloudsplaining==0.5.0
+

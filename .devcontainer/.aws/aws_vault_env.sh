@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -d "/workspaces" ];then
-	SCRIPT_DIR="/workspaces"
-else
-	SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.devcontainer/"
-fi
-
-SCRIPT_PATH="$SCRIPT_DIR/automator/src/lib/os.sh"
-# shellcheck source=/dev/null
-source "$SCRIPT_PATH"
+NC=$'\e[0m' # No Color
+BOLD=$'\033[1m'
+UNDERLINE=$'\033[4m'
+RED=$'\e[31m'
+GREEN=$'\e[32m'
+BLUE=$'\e[34m'
+ORANGE=$'\x1B[33m'
 
 function add_profile_to_aws_vault(){
     while true

@@ -9,16 +9,21 @@ checkCommon
 
 # Definition specific tests
 #checkExtension "ms-azuretools.vscode-docker"
+check "gpg2" gpg2 --version
 check "pass" pass --version
 check "pre-commit" pre-commit --version
 check "gh" gh --version
 check "dotenv" dotenv --version
-check "sentry" sentry-cli --version
-check "aws-vault" aws-vault --version
 check "sentry-cli" sentry-cli --version
+check "syft" syft --version
+check "grype" grype version
 check "aws" aws --version
 check "aws-vault" aws-vault --version
-check "gpg2" gpg2 --version
+check "awless" awless --version
+check "awsaudit" awsaudit --version
+check "cloudsplaining" cloudsplaining --version
+check "cloud-nuke" cloud-nuke --version
+check "aws-nuke" aws-nuke version
 
 #check "pre-commit" pre-commit run --all-files
 # Report result
