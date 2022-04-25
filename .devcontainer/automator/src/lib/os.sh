@@ -114,10 +114,6 @@ function lls() {
 function run_pre_commit() {
   pre-commit run --config /workspaces/shift-left/.pre-commit-config.yaml --all-files
   #pre-commit run --all-files
-  if [ ! $(git diff --staged --name-only --diff-filter=ARM >/dev/null 2>&1 ) ];then
-    echo -e "${GREEN}Adding auto formated files${NC}"
-    git diff --staged --name-only --diff-filter=ARM | xargs git add
-  fi
 }
 
 # echo message when VERBOSE == 1
@@ -247,7 +243,7 @@ function _generate_ssh_keys() {
     _print_details
     if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
       GIT=$(dotenv get GITHUB_URL)
-    else 
+    else
       GIT=$(cat .env.sample | grep GITHUB_URL)
     fi
     _check_connection "$GIT" 443

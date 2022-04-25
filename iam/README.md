@@ -22,14 +22,14 @@ Manual Steps to generate report:
 1. Downloaded the Account Authorization details JSON file
     ```sh
     cloudsplaining download  --output reports/AWS_PROFILE
-    ```   
+    ```
 2. Generate custom exclusions file
     ```sh
         cloudsplaining create-exclusions-file --output-file reports/$AWS_PROFILE-exclusions.yml
-    ```   
-3. Generate the report 
+    ```
+3. Generate the report
     ```sh
     cloudsplaining scan --input-file reports/$AWS_PROFILE-account-details.json --exclusions-file reports/$AWS_PROFILE-exclusions.yml
-    ```  
+    ```
 
 This generates The single-file HTML report and the raw JSON data file

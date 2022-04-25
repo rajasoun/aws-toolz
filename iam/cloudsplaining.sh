@@ -33,4 +33,3 @@ else
     echo -e "HTMl Report  : ${UNDERLINE}reports/$AWS_PROFILE/iam-report-default.html${NC}\n"
     echo -e "More Details : https://github.com/salesforce/cloudsplaining#cheatsheet\n"
 fi
-

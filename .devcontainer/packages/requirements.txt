@@ -10,4 +10,3 @@ pandas==1.4.2
 XlsxWriter==3.0.3
 python-dateutil==2.8.2
 cloudsplaining==0.5.0
-

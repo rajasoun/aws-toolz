@@ -96,7 +96,7 @@ $ ./setup.sh
 Run the utility using below command
 ```sh
 $ ./prowler.sh
-$ exit 
+$ exit
 ```
 
 Reference: https://github.com/toniblyx/prowler
