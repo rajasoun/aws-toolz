@@ -95,6 +95,7 @@ if [ "$ENV" = "dev" ]; then
     make -f .devcontainer/Makefile tools-prerequisite
 else
     echo -e "\n${BOLD}${UNDERLINE}CI Shell For Ops${NC}"
+    _git_config
 fi
 
 launch
