@@ -292,3 +292,7 @@ $RECYCLE.BIN/
 
 id_rsa
 id_rsa.pub
+aws-nuke.yml
+*.xlsx
+*.csv
+
