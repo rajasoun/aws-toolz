@@ -86,6 +86,10 @@ function launch(){
             "$name:$VERSION"
 }
 
+if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
+	prompt "${ORANGE} Starting Configuration ${NC}"
+	gsetup
+fi
 echo -e "\n${BOLD}${UNDERLINE}SSH & Git Configurations${NC}"
 _configure_ssh_gitconfig
 check_and_make_first_release_if_not_done
