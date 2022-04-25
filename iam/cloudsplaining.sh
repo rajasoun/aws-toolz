@@ -21,6 +21,7 @@ else
     AWS_CLOUDSPLAINING_CMD="cloudsplaining download --output reports/$AWS_PROFILE"
     AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
     export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_CLOUDSPLAINING_CMD
+    rm -fr "reports/$AWS_PROFILE/$AWS_PROFILE-exclusions.yml"
     cloudsplaining create-exclusions-file --output-file reports/$AWS_PROFILE/$AWS_PROFILE-exclusions.yml > /dev/null
     echo -e "Configure Exclusion Filter -> ${UNDERLINE}reports/$AWS_PROFILE/$AWS_PROFILE-exclusions.yml${NC}"
     AWS_CLOUDSPLAINING_CMD="cloudsplaining scan \
@@ -28,5 +29,8 @@ else
         --input-file reports/$AWS_PROFILE/default.json \
         --output reports/$AWS_PROFILE"
     export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_CLOUDSPLAINING_CMD
+    echo -e "\n${GREEN}IAM Audit Done${NC}"
+    echo -e "HTMl Report  : ${UNDERLINE}reports/$AWS_PROFILE/iam-report-default.html${NC}\n"
+    echo -e "More Details : https://github.com/salesforce/cloudsplaining#cheatsheet\n"
 fi
 
