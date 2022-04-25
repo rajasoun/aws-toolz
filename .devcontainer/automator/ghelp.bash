@@ -344,9 +344,13 @@ alias init-debug='init_debug'
 alias ci-cd="make -f .devcontainer/Makefile $@"
 alias code-churn="code_churn"
 
-if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
-	prompt "${ORANGE} Starting gsetup ${NC}"
-	gsetup
+if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
+	echo -e "${BOLD} Environment : dev"
+	_prompt_confirm 
+	if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
+		prompt "${ORANGE} Starting gsetup ${NC}"
+		gsetup
+	fi
 fi
 
 git_hub_login token
