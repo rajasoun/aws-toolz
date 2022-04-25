@@ -350,13 +350,14 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 		prompt "${ORANGE} Starting gsetup ${NC}"
 		gsetup
 	fi
+	git_hub_login token
+	init_debug
+	EXIT_CODE="$?"
+	log_sentry "$EXIT_CODE" "DevContainer Initialization"
+	check_git_config
 	rm -fr $(git rev-parse --show-toplevel)/.dev
+else 
+	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}"
 fi
-
-git_hub_login token
-init_debug
-EXIT_CODE="$?"
-log_sentry "$EXIT_CODE" "DevContainer Initialization"
-check_git_config
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
