@@ -299,7 +299,7 @@ function aws_whoami(){
 	if [ -z $AWS_PROFILE ];then
 		#AWS_PROFILE Empty
 		echo -e "\n${BOLD}${RED}AWS Profile parameter missing  ${NC}"
-		echo -e "aws-bill <aws_profile>\n"
+		echo -e "aws-whoami <aws_profile>\n"
 	else
 		#AWS_PROFILE Not Empty
 		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_WHOAMI_CMD
