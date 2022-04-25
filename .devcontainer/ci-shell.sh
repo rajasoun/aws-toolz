@@ -66,28 +66,6 @@ function _populate_dot_env() {
 	_file_replace_text "3__________FILL_ME__________3" "$SENTRYDSN" "$(git rev-parse --show-toplevel)/.env"
 }
 
-function gsetup() {
-	if [ "$(git rev-parse --is-inside-work-tree)" = true ]; then
-		if [[ $(git diff --stat) != '' ]]; then
-			prompt "${RED} Git Working Tree Not Clean. Aborting setup !!! ${NC}"
-			EXIT_CODE=1
-			log_sentry "$EXIT_CODE" "gsetup | Git Working Tree Not Clean. Aborting setup"
-		else
-			start=$(date +%s)
-			prompt "Git Working Tree Clean"
-			cp .env .env.bak
-			_install_git_hooks || prompt "_install_git_hooks ❌"
-			_populate_dot_env || prompt "_populate_dot_env ❌"
-			end=$(date +%s)
-			runtime=$((end - start))
-			prompt "gsetup DONE in $(_display_time $runtime)"
-			/workspaces/tests/system/e2e_tests.sh
-			EXIT_CODE="$?"
-			log_sentry "$EXIT_CODE" "gsetup "
-		fi
-	fi
-}
-
 # Check if first release is made by
 # if .devcontainer/version.txt exists
 function check_and_make_first_release_if_not_done(){
@@ -137,7 +115,7 @@ function launch(){
 
 if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
 	prompt "${ORANGE} Starting gsetup ${NC}"
-	gsetup
+	_populate_dot_env
 fi
 
 echo -e "\n${BOLD}${UNDERLINE}SSH & Git Configurations${NC}"
