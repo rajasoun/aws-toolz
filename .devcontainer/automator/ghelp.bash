@@ -358,6 +358,9 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 	rm -fr $(git rev-parse --show-toplevel)/.dev
 else 
 	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}"
+	ci-cd tools-prerequisite
+	echo "Build -> ci-cd build"
+	echo "Push  -> ci-cd push"
 fi
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
