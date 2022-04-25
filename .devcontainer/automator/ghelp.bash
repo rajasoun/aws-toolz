@@ -374,7 +374,7 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 	echo -e "${GREEN}Help : dev-help${NC}\n"
 else 
 	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}\n"
-	echo -e "${GREEN}Help : ops-help${NC}\n"
+	echo -e "${GREEN}Help : aws-help${NC}\n"
 fi
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
