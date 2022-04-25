@@ -378,9 +378,6 @@ else
 		prompt "${ORANGE} Starting gsetup ${NC}"
 		gsetup
 	fi
-	init_debug
-	EXIT_CODE="$?"
-	log_sentry "$EXIT_CODE" "DevContainer Initialization for ops"
 fi
 
 export PRE_COMMIT_ALLOW_NO_CONFIG=1
