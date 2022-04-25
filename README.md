@@ -69,18 +69,12 @@ Features of the AWS Audit:
 
 Select the AWS Profile for AWS Audit
 ```sh
-$ aws-env
-```
-
-Run the utility using below command
-```sh
-$ awsaudit
+$ aws-env awsaudit
 ```
 
 Or Non Interactively
 ```sh
-$ $AWS_PROFILE=
-$ aws-vault exec $AWS_PROFILE --no-session -- awsaudit
+$ export AWS_PROFILE=<profile_name> && aws-env awsaudit
 ```
 
 Reference: https://pypi.org/project/aws-audit/
@@ -95,13 +89,14 @@ Read more about [CIS Amazon Web Services Foundations Benchmark v1.2.0 - 05-23-20
 
 Configure the utility using below command
 ```sh
-$ export $(aws-vault exec secops-experiments --no-session -- env | grep AWS | xargs)
+$ aws-env
 $ ./setup.sh
 ```
 
 Run the utility using below command
 ```sh
 $ ./prowler.sh
+$ exit 
 ```
 
 Reference: https://github.com/toniblyx/prowler
