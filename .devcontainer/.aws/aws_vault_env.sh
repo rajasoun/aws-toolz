@@ -63,6 +63,9 @@ function aws_vault_exec() {
   if [ -z "$CMD" ];then
     echo -e "\n${BOLD}AWS Profile: $AWS_PROFILE. ${UNDERLINE}CTRL-D to exit.${NC}\n"
     #export IGNORE_GHELP=1
+    echo -e "${BOLD}Switching to Base Directory${NC}"
+    echo -e "You were in : ${PWD}"
+    cd "$(git rev-parse --show-toplevel)"
     aws-vault exec $AWS_PROFILE --no-session -- zsh
   else
     echo -e "\n${BOLD}${GREEN}Executing $CMD ${NC}\n"
