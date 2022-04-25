@@ -324,7 +324,7 @@ function aws_bill(){
 # Help Alias Commands
 #-------------------------------------------------------------
 alias aws-help='ops_help'
-alias dev-help='ops_help'
+alias dev-help='dev_help'
 
 #-------------------------------------------------------------
 # Git Alias Commands
