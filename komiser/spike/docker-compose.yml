@@ -1,22 +1,6 @@
 version: '3.7'
 
 services:
-  komizer:
-    image: mlabouardy/komiser:latest
-    container_name: komizer
-    ports:
-      - '3000:3000'
-    command:
-      - '-d'
-      - '0'
-      - '-r'
-      - 'redis:6379'
-      - '-m'
-    volumes:
-      - '${PWD}/.aws:/${HOME}/.aws'
-    links:
-      - redis
-
   redis:
     image: redis:6.2.6
     container_name: redis
