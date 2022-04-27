@@ -285,11 +285,14 @@ function init_pass_store(){
 	fi
 }
 
-function clean_secrets(){
-	rm -fr .devcontainer/.gpg2/keys/
+function clean_configs(){
 	rm -fr .devcontainer/.store/aws-vault
 	rm -fr .devcontainer/.store/.gpg-id
 	mkdir -p .devcontainer/.gpg2/keys
+	## Temp Fix - To restore keys directory with .gitkeep
+	## Find ways to clean directory with exclusion filter
+	rm -fr .devcontainer/.gpg2/keys/
+	touch .devcontainer/.gpg2/keys/.gitkeep
 }
 
 function aws_whoami(){
@@ -337,6 +340,7 @@ alias gclean="git fetch --prune origin && git gc"
 alias glogin="git_hub_login $@"
 alias gstatus="_gstatus"
 alias ghooks="_install_git_hooks"
+alias generate_git_config="_git_config"
 alias gssh_config="_configure_ssh_gitconfig"
 alias grelease="_git_tag"
 
@@ -372,7 +376,7 @@ if [ -f "$(git rev-parse --show-toplevel)/.dev" ]; then
 	check_git_config
 	rm -fr $(git rev-parse --show-toplevel)/.dev
 	echo -e "${GREEN}Help : dev-help${NC}\n"
-else 
+else
 	echo -e "${BOLD}Environment : ${UNDERLINE}ops${NC}\n"
 	if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
 		prompt "${ORANGE} Starting gsetup ${NC}"

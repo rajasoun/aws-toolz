@@ -119,7 +119,7 @@ function run_pre_commit() {
 # echo message when VERBOSE == 1
 function debug() {
   message=$1
-  if [ "$VERBOSE" == 1 ]; then
+  if [ "$VERBOSE" = 1 ]; then
     printf "${ORANGE}\n [DEBUG] %s${NC}\n" "${message}"
   fi
 }
