@@ -40,7 +40,7 @@ $ ci-cd config-prerequisite
 
 ### Build Dev Container
 
-From Terminal Window.
+From Terminal Window - For First Time (If no base Image is Present)
 ```sh
 $ touch .dev
 $ source .devcontainer/automator/ghelp.bash
