@@ -2,5 +2,5 @@
 Development container version information
 
 - Image version: 1.0.1
-- SHA: 939ad6515fefd895740beab15f8d611436a031dd821ebc64892f213998220171
-- Source code repository: https://www-github.cisco.com/LC-SecurityDPP/devcontainer-base
+- SHA: 708190478c4181fdc0eb8bc456a68f1cb3d59b258921dfa90ddfca7e12bac92d
+- Source code repository: git@github.com:rajasoun/aws-toolz.git
