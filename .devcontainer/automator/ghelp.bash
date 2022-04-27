@@ -286,13 +286,22 @@ function init_pass_store(){
 }
 
 function clean_configs(){
+	rm -fr .devcontainer/.ssh/known_hosts
+	rm -fr .devcontainer/.ssh/*id_rsa*
+	rm -fr .devcontainer/.gpg2/keys/
 	rm -fr .devcontainer/.store/aws-vault
 	rm -fr .devcontainer/.store/.gpg-id
-	mkdir -p .devcontainer/.gpg2/keys
+	rm -fr .devcontainer/.aws/config
 	## Temp Fix - To restore keys directory with .gitkeep
 	## Find ways to clean directory with exclusion filter
-	rm -fr .devcontainer/.gpg2/keys/
+	mkdir -p .devcontainer/.gpg2/keys
 	touch .devcontainer/.gpg2/keys/.gitkeep
+}
+
+function backup_configs(){
+	mkdir -p .devcontainer/.ssh/backup
+	mv .devcontainer/.ssh/known_hosts .devcontainer/.ssh/backup
+	mv .devcontainer/.ssh/*id_rsa*	  .devcontainer/.ssh/*id_rsa*
 }
 
 function aws_whoami(){
