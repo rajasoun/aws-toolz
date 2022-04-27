@@ -222,7 +222,7 @@ Development container version information
 
 - Image version: $(cat /opt/version.txt)
 - SHA: $(integrity)
-- Source code repository: https://github.com:rajasoun/aws-toolz.git" > "$(git rev-parse --show-toplevel)/.devcontainer/signature.txt"
+- Source code repository: $(git config --get remote.origin.url)" > "$(git rev-parse --show-toplevel)/.devcontainer/signature.txt"
 	git add .devcontainer/signature.txt
 	HUSKY=0 git commit -m "ci(devcontainer): signature generation" --no-verify
 	git push
