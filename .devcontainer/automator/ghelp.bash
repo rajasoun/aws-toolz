@@ -306,7 +306,7 @@ function backup_configs(){
 
 function aws_whoami(){
 	AWS_PROFILE="$1"
-	AWS_WHOAMI_CMD="$(git rev-parse --show-toplevel)/cost-explorer/libs/identity.py"
+	AWS_WHOAMI_CMD="$(git rev-parse --show-toplevel)/aws-cost-hub/cost-explorer/libs/identity.py"
 	AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
 	if [ -z $AWS_PROFILE ];then
 		#AWS_PROFILE Empty
@@ -326,11 +326,20 @@ function aws_bill(){
 		echo -e "aws-bill <aws_profile>\n"
 	else
 		#AWS_PROFILE Not Empty
-		AWS_BILL_CMD="$(git rev-parse --show-toplevel)/cost-explorer/bill.py --profile $AWS_PROFILE --log Warn"
+		AWS_BILL_CMD="$(git rev-parse --show-toplevel)/aws-cost-hub/cost-explorer/bill.py --profile $AWS_PROFILE --log Warn"
 		AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
 		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_BILL_CMD
 	fi
 }
+
+function pretty_csv {
+    column -t -s, -n "$@" | less -F -S -X -K
+}
+
+function pretty_tsv {
+    column -t -s $'\t' -n "$@" | less -F -S -X -K
+}
+
 
 #-------------------------------------------------------------
 # Help Alias Commands

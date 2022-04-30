@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: devcontainer Image CI
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_NAME: rajasoun/aws-toolz
-  VERSION: 1.0.1
+  VERSION: 1.0.1.0
 
 jobs:
 
@@ -42,3 +42,6 @@ jobs:
 
       - name: Build devcontainer Docker image
         run: npx @vscode/dev-container-cli build --image-name $IMAGE_NAME:$VERSION
+
+      - name: Push devcontainer Docker image
+        run: docker push $IMAGE_NAME:$VERSION
