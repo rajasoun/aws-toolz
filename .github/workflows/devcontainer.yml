@@ -40,5 +40,15 @@ jobs:
       - name: Checkout Code Base
         uses: actions/checkout@v3
 
+      - name: Zip aws-cost-hub directory
+        uses: montudor/action-zip@v1
+        run: zip -qq -r aws-cost-hub.zip aws-cost-hub
+
       - name: Build devcontainer Docker image
         run: npx @vscode/dev-container-cli build --image-name $IMAGE_NAME:$VERSION
+
+      - name: Upload Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "aws-cost-hub.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
