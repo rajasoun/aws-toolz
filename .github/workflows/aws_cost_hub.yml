@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  IMAGE_NAME: rajasoun/aws-toolz
+  VERSION: 1.0.1
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code Base
+        uses: actions/checkout@v3
+
+      - name: Zip aws-cost-hub directory
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r aws-cost-hub.zip aws-cost-hub
+
+      - name: Upload aws-cost-hub.zip file
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "aws-cost-hub.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_NAME: rajasoun/aws-toolz
-  VERSION: 1.0.1
+  VERSION: 1.0.1.0
 
 jobs:
 
@@ -40,16 +40,8 @@ jobs:
       - name: Checkout Code Base
         uses: actions/checkout@v3
 
-      - name: Zip aws-cost-hub directory
-        uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r aws-cost-hub.zip aws-cost-hub
-
       - name: Build devcontainer Docker image
         run: npx @vscode/dev-container-cli build --image-name $IMAGE_NAME:$VERSION
 
-      - name: Upload Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "aws-cost-hub.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push devcontainer Docker image
+        run: docker push $IMAGE_NAME:$VERSION
