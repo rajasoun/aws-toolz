@@ -1,0 +1,19 @@
+name: Release AWS Cost Hub Code
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "aws-cost-hub,iam"
+        token: ${{ secrets.GITHUB_TOKEN }}
