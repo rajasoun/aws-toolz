@@ -42,7 +42,8 @@ jobs:
 
       - name: Zip aws-cost-hub directory
         uses: montudor/action-zip@v1
-        run: zip -qq -r aws-cost-hub.zip aws-cost-hub
+        with:
+          args: zip -qq -r aws-cost-hub.zip aws-cost-hub
 
       - name: Build devcontainer Docker image
         run: npx @vscode/dev-container-cli build --image-name $IMAGE_NAME:$VERSION
