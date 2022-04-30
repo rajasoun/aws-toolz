@@ -27,7 +27,8 @@ import os
 import sys
 
 # Required to load modules from vendored subfolder (for clean development env)
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./vendored"))
+sys.path.append(os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), "./vendored"))
 
 # For date
 # For email
@@ -202,10 +203,12 @@ class CostExplorer:
                 for v in results:
                     row = {"date": v["TimePeriod"]["Start"]}
                     if Savings:
-                        row.update({"Savings$": float(v["Total"]["NetRISavings"])})
+                        row.update(
+                            {"Savings$": float(v["Total"]["NetRISavings"])})
                     else:
                         row.update(
-                            {"Utilization%": float(v["Total"]["UtilizationPercentage"])}
+                            {"Utilization%": float(
+                                v["Total"]["UtilizationPercentage"])}
                         )
                     rows.append(row)
 
@@ -246,7 +249,8 @@ class CostExplorer:
             rows = []
             for i in results:
                 for v in i["RecommendationDetails"]:
-                    row = v["InstanceDetails"][list(v["InstanceDetails"].keys())[0]]
+                    row = v["InstanceDetails"][list(
+                        v["InstanceDetails"].keys())[0]]
                     row["Recommended"] = v["RecommendedNumberOfInstancesToPurchase"]
                     row["Minimum"] = v["MinimumNumberOfInstancesUsedPerHour"]
                     row["Maximum"] = v["MaximumNumberOfInstancesUsedPerHour"]
@@ -360,7 +364,8 @@ class CostExplorer:
             if tagValues:
                 Filter["And"].append(Dimensions)
                 if len(tagValues["Tags"]) > 0:
-                    Tags = {"Tags": {"Key": TAG_KEY, "Values": tagValues["Tags"]}}
+                    Tags = {"Tags": {"Key": TAG_KEY,
+                                     "Values": tagValues["Tags"]}}
                     Filter["And"].append(Tags)
             else:
                 Filter = Dimensions.copy()
@@ -410,9 +415,11 @@ class CostExplorer:
                 key = i["Keys"][0]
                 if key in self.accounts:
                     key = self.accounts[key][ACCOUNT_LABEL]
-                row.update({key: float(i["Metrics"]["UnblendedCost"]["Amount"])})
+                row.update(
+                    {key: float(i["Metrics"]["UnblendedCost"]["Amount"])})
             if not v["Groups"]:
-                row.update({"Total": float(v["Total"]["UnblendedCost"]["Amount"])})
+                row.update(
+                    {"Total": float(v["Total"]["UnblendedCost"]["Amount"])})
             rows.append(row)
 
         df = pd.DataFrame(rows)
@@ -426,7 +433,8 @@ class CostExplorer:
                 if lastindex:
                     for i in row.index:
                         try:
-                            df.at[index, i] = dfc.at[index, i] - dfc.at[lastindex, i]
+                            df.at[index, i] = dfc.at[index, i] - \
+                                dfc.at[lastindex, i]
                         except:
                             logging.exception("Error")
                             df.at[index, i] = 0
@@ -448,10 +456,12 @@ class CostExplorer:
             .decode("utf-8")
         )
         REPORT_DIR = (
-            BASE_DIR + "/cost-explorer/generated/" + os.environ.get("AWS_VAULT") + "/"
+            BASE_DIR + "/aws-cost-hub/cost-explorer/generated/" +
+            os.environ.get("AWS_VAULT") + "/"
         )
         os.chdir(REPORT_DIR)
-        writer = pd.ExcelWriter("cost_explorer_report.xlsx", engine="xlsxwriter")
+        writer = pd.ExcelWriter(
+            "cost_explorer_report.xlsx", engine="xlsxwriter")
         workbook = writer.book
         for report in self.reports:
             print(report["Name"], report["Type"])
@@ -460,7 +470,8 @@ class CostExplorer:
             if report["Type"] == "chart":
 
                 # Create a chart object.
-                chart = workbook.add_chart({"type": "column", "subtype": "stacked"})
+                chart = workbook.add_chart(
+                    {"type": "column", "subtype": "stacked"})
 
                 chartend = 12
                 if CURRENT_MONTH:
@@ -475,7 +486,8 @@ class CostExplorer:
                     )
                 chart.set_y_axis({"label_position": "low"})
                 chart.set_x_axis({"label_position": "low"})
-                worksheet.insert_chart("O2", chart, {"x_scale": 2.0, "y_scale": 2.0})
+                worksheet.insert_chart(
+                    "O2", chart, {"x_scale": 2.0, "y_scale": 2.0})
         writer.save()
 
         # Time to deliver the file to S3
@@ -496,7 +508,8 @@ class CostExplorer:
             text = "Find your Cost Explorer report attached\n\n"
             msg.attach(MIMEText(text))
             with open("cost_explorer_report.xlsx", "rb") as fil:
-                part = MIMEApplication(fil.read(), Name="cost_explorer_report.xlsx")
+                part = MIMEApplication(
+                    fil.read(), Name="cost_explorer_report.xlsx")
             part["Content-Disposition"] = (
                 'attachment; filename="%s"' % "cost_explorer_report.xlsx"
             )
@@ -514,7 +527,8 @@ def main_handler(event=None, context=None):
     costexplorer = CostExplorer(CurrentMonth=False)
     # Default addReport has filter to remove Support / Credits / Refunds / UpfrontRI / Tax
     # Overall Billing Reports
-    costexplorer.addReport(Name="Total", GroupBy=[], Style="Total", IncSupport=True)
+    costexplorer.addReport(Name="Total", GroupBy=[],
+                           Style="Total", IncSupport=True)
     costexplorer.addReport(Name="TotalChange", GroupBy=[], Style="Change")
     costexplorer.addReport(
         Name="TotalInclCredits",
@@ -526,8 +540,10 @@ def main_handler(event=None, context=None):
     costexplorer.addReport(
         Name="TotalInclCreditsChange", GroupBy=[], Style="Change", NoCredits=False
     )
-    costexplorer.addReport(Name="Credits", GroupBy=[], Style="Total", CreditsOnly=True)
-    costexplorer.addReport(Name="Refunds", GroupBy=[], Style="Total", RefundOnly=True)
+    costexplorer.addReport(Name="Credits", GroupBy=[],
+                           Style="Total", CreditsOnly=True)
+    costexplorer.addReport(Name="Refunds", GroupBy=[],
+                           Style="Total", RefundOnly=True)
     costexplorer.addReport(
         Name="RIUpfront", GroupBy=[], Style="Total", UpfrontOnly=True
     )
