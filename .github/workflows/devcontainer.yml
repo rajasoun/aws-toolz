@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main,develop ]
+  pull_request:
+    branches: [ main,develop ]
+
+env:
+  IMAGE_NAME: rajasoun/aws-toolz
+  VERSION: 1.0.1
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - run: npm install @vscode/dev-container-cli
+    - name: Build the Docker image
+      run: npx @vscode/dev-container-cli build --image-name $IMAGE_NAME:$VERSION
