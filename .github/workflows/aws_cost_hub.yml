@@ -4,6 +4,7 @@ on:
   push:
     tags:
     - '*'
+    branches: [ main, develop ]
 
 jobs:
 
@@ -15,5 +16,5 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: "aws-cost-hub,iam"
+        artifacts: "aws-cost-hub/aws-cli/*.sh,aws-cost-hub/cost-explorer/libs/*.py,aws-cost-hub/cost-explorer/*.py,iam/iam/cloudsplaining.sh"
         token: ${{ secrets.GITHUB_TOKEN }}
