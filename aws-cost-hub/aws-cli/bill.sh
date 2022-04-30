@@ -60,7 +60,7 @@ function get_bill(){
     BILLING_INFO=$(echo $BILLING_SUMMARY | jq '.[] | .[] | .Amount + " " +.Unit')
 
     echo -e $BASIC_INFO $BILLING_INFO | tr -d '"'
-    echo -e $BASIC_INFO $BILLING_INFO | tr -d '"' >> ${PWD}/scripts/bill.csv
+    echo -e $BASIC_INFO $BILLING_INFO | tr -d '"' >> ${PWD}/aws-cost-hub/aws-cli/bill.csv
 }
 
 get_bill

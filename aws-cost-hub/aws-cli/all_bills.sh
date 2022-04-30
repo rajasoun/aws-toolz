@@ -9,9 +9,9 @@ case "$OSTYPE" in
     *);;
 esac
 
-echo "Account ID,Account Alias,Bill" > ${PWD}/scripts/bill.csv
+echo "Account ID,Account Alias,Bill" > ${PWD}/aws-cost-hub/aws-cli/bill.csv
 for aws_profile in $(aws configure list-profiles);do
     echo -e "Getting Bill for $aws_profile"
     export AWS_PROFILE=$aws_profile
-    .devcontainer/.aws/aws_vault_env.sh "scripts/bill.sh"
+    .devcontainer/.aws/aws_vault_env.sh "aws-cost-hub/aws-cli/bill.sh"
 done

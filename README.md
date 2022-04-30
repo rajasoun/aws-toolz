@@ -6,6 +6,7 @@ Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
 From Terminal Window.
 ```sh
+$ git clone https://github.com/rajasoun/aws-toolz
 $ .devcontainer/ci-shell.sh
 $ ci-cd config-prerequisite
 ```
@@ -36,28 +37,30 @@ $ ci-cd config-prerequisite
    $ aws-env
    ```
 
-## Building and Pushing Devcontainers
+## aws-billing
+Getting billing
 
-### Build Dev Container
+Get Detailed Billing by account
+   ```bash
+   $ aws-whoami <aws_profile>
+   $ aws-bill <aws_profile>
+   $ aws-env aws-cost-hub/cost-explorer/spike/lambda.py
+   ```
 
-From Terminal Window - For First Time (If no base Image is Present)
-```sh
-$ touch .dev
-$ source .devcontainer/automator/ghelp.bash
-$ ci-cd tools-prerequisite
-$ ci-cd build
-```
+Get Summary Billing for all accounts
+   ```bash
+   $ aws-whoami <aws_profile>
+   ```
 
-### Push Dev Container
+## Cloudsplaining
 
-From Terminal Window.
-```sh
-$ .devcontainer/ci-shell.sh dev
-$ devcontainer_signature
-$ exit
-$ ci-cd build
-$ ci-cd push
-```
+Cloudsplaining is an AWS IAM Security Assessment tool that identifies violations of least privilege and generates a risk-prioritized HTML report.
+Refrence: https://github.com/salesforce/cloudsplaining
+
+   ```bash
+   $ cd iam
+   $ ./cloudsplaining.sh <aws_profile>
+   ```
 
 ## awsaudit
 
@@ -106,3 +109,26 @@ Reference: https://github.com/toniblyx/prowler
 AWS FinOps - Stay under budget by uncovering hidden costs, monitoring increases in spend, and making impactful changes based on custom recommendations.
 
 Reference: https://github.com/mlabouardy/komiser
+
+## Building and Pushing Devcontainers
+
+### Build Dev Container
+
+From Terminal Window - For First Time (If no base Image is Present)
+```sh
+$ touch .dev
+$ source .devcontainer/automator/ghelp.bash
+$ ci-cd tools-prerequisite
+$ ci-cd build
+```
+
+### Push Dev Container
+
+From Terminal Window.
+```sh
+$ .devcontainer/ci-shell.sh dev
+$ devcontainer_signature
+$ exit
+$ ci-cd build
+$ ci-cd push
+```
