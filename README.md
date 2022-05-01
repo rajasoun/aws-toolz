@@ -132,3 +132,10 @@ $ exit
 $ ci-cd build
 $ ci-cd push
 ```
+
+### Test Dev Container
+
+From Terminal Window.
+```sh
+$  .devcontainer/ci-shell.sh ops  /workspaces/tests/system/e2e_tests.sh
+```
