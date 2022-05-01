@@ -11,8 +11,8 @@ LIST_TAGS=$(git tag -l)
 # shellcheck disable=SC2015
 # shellcheck disable=SC2155
 # shellcheck disable=SC2005
-export VERSION=$([ "${LIST_TAGS}" ] && echo "$(git describe --tags --abbrev=0 )" || ( echo "1.0.0";))
-
+# export VERSION=$([ "${LIST_TAGS}" ] && echo "$(git describe --tags --abbrev=0 )" || ( echo "1.0.0";))
+export VERSION=1.0.1
 
 # Workaround for Path Limitations in Windows
 function _docker() {
@@ -64,6 +64,7 @@ function check_and_make_first_release_if_not_done(){
 }
 
 function launch(){
+    ENTRY_POINT_CMD=$1
     GIT_REPO_NAME="$(basename "$(git rev-parse --show-toplevel)")"
     echo "Launching ci-shell for $name:$VERSION"
     # shellcheck disable=SC2140
@@ -71,7 +72,7 @@ function launch(){
             --name "ci-shell-$GIT_REPO_NAME" \
             --sig-proxy=false \
             -a STDOUT -a STDERR \
-            --entrypoint=/bin/zsh \
+            --entrypoint=$ENTRY_POINT_CMD \
             --user vscode  \
             --mount type=bind,source="${PWD}/.devcontainer/dotfiles/.gitconfig",target="/home/vscode/.gitconfig",consistency=cached \
             --mount type=bind,source="${PWD}/.devcontainer/.ssh",target="/home/vscode/.ssh",consistency=cached \
@@ -87,6 +88,7 @@ function launch(){
 }
 
 ENV=$1
+ENTRY_POINT_CMD=$2
 
 if [ "$ENV" = "dev" ]; then
     echo "$(date)" > "$(git rev-parse --show-toplevel)/.dev"
@@ -100,4 +102,8 @@ else
     _git_config
 fi
 
-launch
+if [ -z $ENTRY_POINT_CMD ]; then
+    ENTRY_POINT_CMD="/bin/zsh"
+fi
+
+launch $ENTRY_POINT_CMD

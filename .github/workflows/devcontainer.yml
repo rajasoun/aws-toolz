@@ -1,4 +1,4 @@
-name: devcontainer Image CI
+name: devcontainer-build
 
 on:
   push:

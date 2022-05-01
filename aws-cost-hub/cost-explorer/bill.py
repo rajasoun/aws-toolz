@@ -43,9 +43,10 @@ class Bill:
     def __init__(self):
         """Initialization"""
         parser = argparse.ArgumentParser()
-        parser.add_argument("--log", type=str, default="debug")
+        parser.add_argument("--log", type=str, default="warn")
         parser.add_argument("--days", type=int, default=30)
-        parser.add_argument("--profile", type=str, default="default")
+        parser.add_argument("--profile", type=str,
+                            default=os.getenv("AWS_VAULT"))
         parser.add_argument(
             "--current_month", type=str, default="false"
         )  # Previous Month

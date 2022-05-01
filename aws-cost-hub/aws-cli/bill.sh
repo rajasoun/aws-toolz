@@ -32,6 +32,11 @@ function calculate_dates(){
 }
 
 function get_bill(){
+    report_path=$1
+    if [ -z $report_path ];then
+        report_path="/tmp/bill.csv"
+    fi
+
     CALLER_IDENTITY_CMD="aws sts get-caller-identity"
     LIST_ACCOUNT_ALIASES_CMD="aws iam list-account-aliases"
     GET_USER_CMD="aws iam get-user"
@@ -59,8 +64,8 @@ function get_bill(){
 
     BILLING_INFO=$(echo $BILLING_SUMMARY | jq '.[] | .[] | .Amount + " " +.Unit')
 
-    echo -e $BASIC_INFO $BILLING_INFO | tr -d '"'
-    echo -e $BASIC_INFO $BILLING_INFO | tr -d '"' >> ${PWD}/scripts/bill.csv
+    echo -e $BASIC_INFO $BILLING_INFO | tr -d '"' >> $report_path
+    echo -e "Billing Report available at $report_path"
 }
 
-get_bill
+get_bill $@
