@@ -73,6 +73,14 @@ RUN set -ex \
 RUN set -ex \
     && curl -fsSL https://sentry.io/get-cli/ | bash
 
+# Fetch CLI
+ENV FETCH_URL=github.com/gruntwork-io/fetch/releases/download
+ENV FETCH_VERSION=v0.4.4
+RUN set -ex \
+    && curl -L -o /usr/local/bin/fetch \
+        https://${FETCH_URL}/${FETCH_VERSION}/fetch_linux_amd64 \
+    && chmod 755 /usr/local/bin/fetch
+
 # syft & grype support
 ENV SYFT_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/syft/main/install.sh"
 ENV GRYPE_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/grype/main/install.sh"
