@@ -1,5 +1,7 @@
 # AWS Scanners
 
+[![DevContainer Build](https://github.com/rajasoun/aws-toolz/workflows/devcontainer-build/badge.svg)](https://github.com/rajasoun/aws-toolz/actions)
+
 Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
 ## Initial Setup
