@@ -1,11 +1,32 @@
 #!/usr/bin/env bash
 
+function is_git_dir(){
+    git_dir_check=$(git rev-parse --is-inside-work-tree > /dev/null 2>&1)
+    if [ $? -eq 0 ]; then
+        echo "yes"
+    else
+        echo "no"
+    fi
+
+}
+
+function is_dir_in_gitignore(){
+    dir_in_gitignore=$(git check-ignore -v reports/* > /dev/null 2>&1 )
+    if [ $? -eq 0  ];then
+        echo "yes"
+    else
+        echo "no"
+    fi
+}
+
 function report_path(){
     base_path="/tmp"
     # Is Git Directory
-    if [ $(git rev-parse --is-inside-work-tree > /dev/null 2>&1) ]; then
+    if [[ $(is_git_dir) == "yes" ]]; then
+        echo "Executing within Git Repository"
         # Is report directory in .gitignore
-        if [  $(git check-ignore -v reports | grep -c "reports") ];then
+        if [[ $(is_dir_in_gitignore) == "yes"  ]];then
+            echo "reports dir included as part of .gitignore"
             base_path="${PWD}"
         fi
     fi
