@@ -298,3 +298,4 @@ aws-nuke.yml
 .dev
 .ops
 reports
+*bfg-report
