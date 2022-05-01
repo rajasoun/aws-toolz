@@ -23,10 +23,8 @@ function report_path(){
     base_path="/tmp"
     # Is Git Directory
     if [[ $(is_git_dir) == "yes" ]]; then
-        echo "Executing within Git Repository"
         # Is report directory in .gitignore
         if [[ $(is_dir_in_gitignore) == "yes"  ]];then
-            echo "reports dir included as part of .gitignore"
             base_path="${PWD}"
         fi
     fi
