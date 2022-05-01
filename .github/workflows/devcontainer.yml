@@ -43,5 +43,8 @@ jobs:
       - name: Build devcontainer Docker image
         run: npx @vscode/dev-container-cli build --image-name $IMAGE_NAME:$VERSION
 
+      - name: Test devcontainer Docker image
+        run: .devcontainer/ci-shell.sh ops  /workspaces/tests/system/e2e_tests.sh
+
       - name: Push devcontainer Docker image
         run: docker push $IMAGE_NAME:$VERSION
