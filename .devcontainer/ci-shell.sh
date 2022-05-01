@@ -11,8 +11,8 @@ LIST_TAGS=$(git tag -l)
 # shellcheck disable=SC2015
 # shellcheck disable=SC2155
 # shellcheck disable=SC2005
-export VERSION=$([ "${LIST_TAGS}" ] && echo "$(git describe --tags --abbrev=0 )" || ( echo "1.0.0";))
-
+# export VERSION=$([ "${LIST_TAGS}" ] && echo "$(git describe --tags --abbrev=0 )" || ( echo "1.0.0";))
+export VERSION=1.0.1
 
 # Workaround for Path Limitations in Windows
 function _docker() {

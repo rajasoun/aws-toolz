@@ -2,7 +2,7 @@
 
 # [Choice] Python version (use -bullseye variants on local arm64/Apple Silicon): 3, 3.10, 3.9, 3.8, 3.7, 3.6, 3-bullseye, 3.10-bullseye, 3.9-bullseye, 3.8-bullseye, 3.7-bullseye, 3.6-bullseye, 3-buster, 3.10-buster, 3.9-buster, 3.8-buster, 3.7-buster, 3.6-buster
 ARG VARIANT="3.10-bullseye"
-FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
+FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT} as base
 
 # [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
 ARG NODE_VERSION="none"
@@ -31,7 +31,20 @@ RUN set -x \
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
 
+# toolz-base image
+FROM debian:bullseye-slim as toolz-base
+RUN set -x \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+       curl wget ca-certificates \
+    && apt-get autoremove -y  \
+    && apt-get clean -y \
+    && rm -r /var/cache/* /var/lib/apt/lists/*
+
 # aws-vault CLI
+FROM toolz-base as aws-vault
 ENV AWS_VAULT_URL=github.com/99designs/aws-vault/releases/download
 ENV AWS_VAULT_VERSION=v6.6.0
 RUN set -ex \
@@ -40,6 +53,7 @@ RUN set -ex \
     && chmod 755 /usr/local/bin/aws-vault
 
 # cloud-nuke CLI
+FROM toolz-base as cloud-nuke
 ENV CLOUD_NUKE_URL=github.com/gruntwork-io/cloud-nuke/releases/download
 ENV CLOUD_NUKE_VERSION=v0.11.3
 RUN set -ex \
@@ -48,6 +62,7 @@ RUN set -ex \
     && chmod 755 /usr/local/bin/cloud-nuke
 
 # aws-nuke CLI
+FROM toolz-base as aws-nuke
 ENV AWS_NUKE_URL=github.com/rebuy-de/aws-nuke/releases/download
 ENV AWS_NUKE_VERSION=v2.17.0
 ENV AWS_NUKE_EXEC=aws-nuke-${AWS_NUKE_VERSION}-linux-amd64
@@ -59,6 +74,7 @@ RUN set -ex \
     && mv /tmp/${AWS_NUKE_EXEC} /usr/local/bin/aws-nuke
 
 # awless CLI
+FROM toolz-base as awless
 ENV AWS_LESS_URL=github.com/wallix/awless/releases/download
 ENV AWS_LESS_VERSION=v0.1.11
 ENV AWS_LESS_EXEC=awless
@@ -69,11 +85,8 @@ RUN set -ex \
 RUN set -ex \
     && mv /tmp/${AWS_LESS_EXEC} /usr/local/bin/awless
 
-# Sentry CLI
-RUN set -ex \
-    && curl -fsSL https://sentry.io/get-cli/ | bash
-
 # Fetch CLI
+FROM toolz-base as fetch
 ENV FETCH_URL=github.com/gruntwork-io/fetch/releases/download
 ENV FETCH_VERSION=v0.4.4
 RUN set -ex \
@@ -82,11 +95,17 @@ RUN set -ex \
     && chmod 755 /usr/local/bin/fetch
 
 # syft & grype support
+FROM toolz-base as syft-grype
 ENV SYFT_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/syft/main/install.sh"
 ENV GRYPE_INSTALL_SCRIPT="https://raw.githubusercontent.com/anchore/grype/main/install.sh"
 RUN set -ex \
     && curl -sSfL "$SYFT_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin \
     && curl -sSfL "$GRYPE_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin
+
+FROM base
+# Sentry CLI
+RUN set -ex \
+    && curl -fsSL https://sentry.io/get-cli/ | bash
 
 # oh-my-zsh plugins
 # 	zsh-autosuggestions - suggests commands as you type based on history and completions
@@ -99,12 +118,21 @@ RUN git clone https://github.com/blimmer/zsh-aws-vault.git "$PLUGIN_FOLDER"/zsh-
 COPY dotfiles/.zshrc /home/$USERNAME/
 
 # Copy shift-left files
-COPY shift-left /workspaces/shift-left
-COPY tests      /workspaces/tests
-COPY automator  /workspaces/automator
-COPY version.txt     /opt/version.txt
-COPY signature.txt     /opt/signature.txt
+COPY shift-left     /workspaces/shift-left
+COPY tests          /workspaces/tests
+COPY automator      /workspaces/automator
+COPY version.txt    /opt/version.txt
+COPY signature.txt  /opt/signature.txt
 COPY dotfiles/.czrc /home/$USERNAME/
+
+#COPY tools
+COPY --from=aws-vault       /usr/local/bin/aws-vault    /usr/local/bin/aws-vault
+COPY --from=cloud-nuke      /usr/local/bin/cloud-nuke   /usr/local/bin/cloud-nuke
+COPY --from=aws-nuke        /usr/local/bin/aws-nuke     /usr/local/bin/aws-nuke
+COPY --from=awless          /usr/local/bin/awless       /usr/local/bin/awless
+COPY --from=fetch           /usr/local/bin/fetch        /usr/local/bin/fetch
+COPY --from=syft-grype      /usr/local/bin/syft         /usr/local/bin/syft
+COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
 
 RUN chown -R vscode:vscode /workspaces
 RUN chmod 755 /workspaces
