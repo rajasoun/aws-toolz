@@ -41,8 +41,9 @@ function get_bill(){
     LIST_ACCOUNT_ALIASES_CMD="aws iam list-account-aliases"
     GET_USER_CMD="aws iam get-user"
 
-    BASIC_SUMMARY=$({ $CALLER_IDENTITY_CMD && $LIST_ACCOUNT_ALIASES_CMD && $GET_USER_CMD; } | jq -s ".|add")
+    #BASIC_SUMMARY=$({ $CALLER_IDENTITY_CMD && $LIST_ACCOUNT_ALIASES_CMD && $GET_USER_CMD; } | jq -s ".|add")
     #BASIC_INFO=$(echo $BASIC_SUMMARY | jq '"Account : " + .Account + "\nUser Name : "+ .User.UserName + "\nAccount Alias : " + .AccountAliases[]')
+    BASIC_SUMMARY=$({ $CALLER_IDENTITY_CMD && $LIST_ACCOUNT_ALIASES_CMD; } | jq -s ".|add")
 
     calculate_dates
     BILLING_SUMMARY=$(aws ce get-cost-and-usage                \
@@ -54,18 +55,19 @@ function get_bill(){
 
     #BILLING_INFO=$(echo $BILLING_SUMMARY | jq '.[] | .[] | "Bill : " + .Amount + " " +.Unit')
     if [ $(echo $BASIC_SUMMARY | grep -c "AccountAliases") = 1 ];then
-        echo "AccountAliases Available "
+        # echo "AccountAliases Available "
         BASIC_INFO=$(echo $BASIC_SUMMARY | jq '.Account + "," + .AccountAliases[] +  ","')
     else
         echo -e "${RED}Not authorized to perform: iam:ListAccountAliases${NC}"
         BASIC_INFO=$(echo $BASIC_SUMMARY | jq '.Account')
         BASIC_INFO="$(echo $BASIC_INFO,$AWS_VAULT,)"
     fi
-
+    #Remove the spaces from the variable
+    BASIC_INFO=$(echo $BASIC_INFO | xargs)
     BILLING_INFO=$(echo $BILLING_SUMMARY | jq '.[] | .[] | .Amount + " " +.Unit')
-
-    echo -e $BASIC_INFO $BILLING_INFO | tr -d '"' >> $report_path
-    echo -e "Billing Report available at $report_path"
+    REPORT_DATE="$(date +"%Y-%m-%d"),"
+    echo -e "$REPORT_DATE$BASIC_INFO$BILLING_INFO" | tr -d '"' >> $report_path
+    #echo -e "Billing Report available at $report_path"
 }
 
 get_bill $@
