@@ -136,6 +136,11 @@ COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
 
 COPY --from=rajasoun/aws-sso:1.0.0  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
 
+# RUN fetch --repo="https://github.com/rajasoun/aws-toolz" \
+#     --tag="1.0.1" \
+#     --source-path="/aws-cost-hub" \
+#     /workspace/aws-cost-hub
+
 RUN chown -R vscode:vscode /workspaces
 RUN chmod 755 /workspaces
 
