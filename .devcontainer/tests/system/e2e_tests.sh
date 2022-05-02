@@ -25,6 +25,7 @@ check "cloudsplaining" cloudsplaining --version
 check "cloud-nuke" cloud-nuke --version
 check "aws-nuke" aws-nuke version
 check "fetch" fetch --version
+check "aws-sso" duo-sso -version
 
 #check "pre-commit" pre-commit run --all-files
 # Report result

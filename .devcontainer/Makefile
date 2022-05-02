@@ -80,6 +80,11 @@ git:  ## Rebase latest version details, tag release and do checkin
 	git push origin "$(VERSION)" --no-verify
 	@echo "$(BOLD)$(GREEN)Completed Git updates - $(IMAGE_NAME):$(VERSION) $(RESET)"
 
+test: ## Automated e2e Test Suite for devcontainer
+	@echo "$(BOLD)$(YELLOW) DevContainer e2e Tests $(RESET)"
+	.devcontainer/ci-shell.sh ops /workspaces/tests/system/e2e_tests.sh
+	@echo "$(BOLD)$(GREEN)Completed DevContainer e2e Tests $(RESET)"
+
 clean: ## Remove Base Container Image
 	@echo "$(BOLD)$(YELLOW)Removing docker image locally - $(IMAGE_NAME) $(RESET)"
 	$(eval IMAGES=$(shell docker images $(IMAGE_NAME) -a -q ))

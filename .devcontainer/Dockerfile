@@ -134,8 +134,25 @@ COPY --from=fetch           /usr/local/bin/fetch        /usr/local/bin/fetch
 COPY --from=syft-grype      /usr/local/bin/syft         /usr/local/bin/syft
 COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
 
+COPY --from=rajasoun/aws-sso:1.0.0  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
+
+RUN fetch --repo="https://github.com/rajasoun/aws-toolz" \
+    --tag="1.0.1" \
+    --source-path="/aws-cost-hub/aws-cli" \
+    /workspaces/tools/
+RUN fetch --repo="https://github.com/rajasoun/aws-toolz" \
+    --tag="1.0.1" \
+    --source-path="/.devcontainer/.aws/aws_vault_env.sh" \
+    /workspaces/tools/aws_vault_env.sh
+RUN fetch --repo="https://github.com/rajasoun/aws-toolz" \
+    --tag="1.0.1" \
+    --source-path="/aws-cost-hub/cost-explorer/libs/identity.py" \
+    /workspaces/tools/identity.py
+
 RUN chown -R vscode:vscode /workspaces
 RUN chmod 755 /workspaces
+RUN chmod a+x  /workspaces/tools/*.sh
+RUN chmod a+x  /workspaces/tools/*.py
 
 # Remove library scripts for final image
 RUN set -ex \
