@@ -141,3 +141,15 @@ From Terminal Window.
 ```sh
 $  .devcontainer/ci-shell.sh ops  /workspaces/tests/system/e2e_tests.sh
 ```
+
+### CLI Tools for Managing AWS EKS
+
+1. [eksctl](https://eksctl.io/) - For creating and managing clusters on [EKS](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html) (Amazon's managed Kubernetes service for EC2)
+
+1. [kubectl](https://kubernetes.io/docs/reference/kubectl/) - For communicating with a [Kubernetes](https://kubernetes.io/docs/home/) Cluster's [control plane](https://kubernetes.io/docs/concepts/overview/components/), using the Kubernetes API.
+
+1. [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator) - For authenticating Kubernetes cluster with [AWS IAM](https://aws.amazon.com/iam/) Crendentials
+
+1. [helm](https://helm.sh/) - For managing applications in Kubernetes.Package Manager for Kubernetes.  Quick start [Guide](https://helm.sh/docs/intro/quickstart/)
+
+1. [kubecost](https://www.kubecost.com/) - For Monitoring & reducing Kubernetes spend
