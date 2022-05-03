@@ -6,9 +6,13 @@ Assembly of Opensource Tools for Auditing and Budget Reporting for AWS Accounts
 
 ## Initial Setup
 
-From Terminal Window.
+> For Windows - Refer [win10x-onboard](https://github.com/rajasoun/win10x-onboard/blob/main/README.md)
+
+From Terminal Window (on Windows Open Git Bash )
 ```sh
+$ cd ~/workspace
 $ git clone https://github.com/rajasoun/aws-toolz
+$ cd aws-toolz
 $ .devcontainer/ci-shell.sh
 $ ci-cd config-prerequisite
 ```
