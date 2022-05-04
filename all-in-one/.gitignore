@@ -4,3 +4,5 @@
 .ssh
 .store
 dotfiles/.gitconfig
+.dev
+.ops
