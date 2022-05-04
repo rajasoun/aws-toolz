@@ -4,10 +4,10 @@
 In terminal Window
 
 ```sh
-wget -O- -q https://raw.githubusercontent.com/rajasoun/common-lib/main/docker/speed.sh | bash
+wget -O- -q https://raw.githubusercontent.com/rajasoun/aws-toolz/main/all-in-one/speed.sh | bash
 ```
 
 ## Launch aws-toolz shell
 ```sh
-wget -O- -q https://raw.githubusercontent.com/rajasoun/common-lib/main/docker/speed.sh | bash
+wget -O- -q https://raw.githubusercontent.com/rajasoun/aws-toolz/main/all-in-one/aws-toolz.sh | bash
 ```
