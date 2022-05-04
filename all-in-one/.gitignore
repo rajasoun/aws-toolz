@@ -3,7 +3,7 @@
 .gpg2/keys
 .ssh
 .store
-dotfiles/.gitconfig
+.devcontainer/dotfiles/.gitconfig
 .dev
 .ops
 .env_done
