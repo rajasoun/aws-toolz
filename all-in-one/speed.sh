@@ -62,13 +62,19 @@ function docker_image_pull_time(){
     EXIT_CODE="$?"
     end=$(date +%s)
     runtime=$((end-start))
-    MESSAGE="docker pull $DOCKER_IMAGE | $USERNAME | Duration: $(_display_time $runtime) "
+    MESSAGE="docker pull $DOCKER_IMAGE | $USER_NAME | Duration: $(_display_time $runtime) "
     log "$EXIT_CODE" "$MESSAGE"
 }
 
 function speed_test(){
     MSYS_NO_PATHCONV=1  docker run --rm rajasoun/speedtest:0.1.0 "/go/bin/speedtest-go"
 }
+
+if [ -z $USERNAME ];then
+  USER_NAME=$USER
+else
+  USER_NAME=$USERNAME
+fi
 
 _start=$(date +%s)
 clean_running_container
@@ -80,8 +86,9 @@ docker_image_pull_time "rajasoun/aws-toolz:1.0.1"
 EXIT_CODE="$?"
 _end=$(date +%s)
 _runtime=$((_end-_start))
-MESSAGE="\n${UNDERLINE}Total Time | $USERNAME | Duration: $(_display_time $_runtime) ${NC}"
+
+MESSAGE="\n${UNDERLINE}Total Time | $USER_NAME | Duration: $(_display_time $_runtime) ${NC}"
 log "$EXIT_CODE" "$MESSAGE"
 printf "\n"
-echo "DevContainer ReBuild for $USERNAME  Done | $(date)"
+echo "DevContainer For $USER_NAME   Done | $(date)"
 printf "\n"
