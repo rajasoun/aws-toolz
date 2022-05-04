@@ -3,8 +3,15 @@ name: devcontainer-build
 on:
   push:
     branches: [ main, develop ]
+    paths:
+      - '.devcontainer/**'
+      - 'aws-cost-hub/aws-cli/**'
+
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - '.devcontainer/**'
+      - 'aws-cost-hub/aws-cli/**'
 
 env:
   IMAGE_NAME: rajasoun/aws-toolz

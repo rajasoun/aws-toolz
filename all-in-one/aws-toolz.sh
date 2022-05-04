@@ -153,7 +153,7 @@ function create_workspace(){
 
 function prepare_environment(){
     echo -e "${BOLD} Zero Configuration Environment Setup ${NC}"
-    create_workspace "$BASE_DIR/aws-toolz-1.0.1"
+    create_workspace "$HOME/aws-toolz-1.0.1"
     check_create_dir "$BASE_DIR/.aws"
     check_create_dir "$BASE_DIR/.gpg2"
     check_create_dir "$BASE_DIR/.gpg2/keys"
