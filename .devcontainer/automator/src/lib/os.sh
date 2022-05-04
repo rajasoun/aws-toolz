@@ -182,8 +182,13 @@ function _copy_to_clipboard() {
 function _prompt_confirm() {
   # call with a prompt string or use a default
   local response msg="${1:-${ORANGE}Do you want to continue${NC}} (y/[n])? "
-  shift
-  read -r "$@" -p "$msg" response || echo
+  if test -n "$ZSH_VERSION"; then
+    read -q "response?$msg"
+  elif test -n "$BASH_VERSION"; then
+    shift
+    read -r "$@" -p "$msg" response || echo
+  fi
+
   case "$response" in
   [yY][eE][sS] | [yY])
     return 0
@@ -241,10 +246,10 @@ function _generate_ssh_keys() {
     debug "SSH Keys Generated Successfully"
     _copy_to_clipboard "$PUBLIC_KEY"
     _print_details
-    if ! [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
+    if  [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
       GIT=$(dotenv get GITHUB_URL)
     else
-      GIT=$(cat .env.sample | grep GITHUB_URL)
+      GIT=$(cat .env.sample | grep GITHUB_URL | sed s/"GITHUB_URL="//)
     fi
     _check_connection "$GIT" 443
     _prompt_confirm "Is SSH Public Added to GitHub"
@@ -312,6 +317,57 @@ function log_sentry() {
   fi
 }
 
+function is_git_dir(){
+    git_dir_check=$(git rev-parse --is-inside-work-tree > /dev/null 2>&1)
+    if [ $? -eq 0 ]; then
+        echo "yes"
+    else
+        echo "no"
+    fi
+}
+
+function is_dir_in_gitignore(){
+    dir_to_check="${1:-reports}"
+    if [ -d $dir_to_check ];then
+        touch "$dir_to_check/test"
+        dir_in_gitignore=$(git check-ignore -v $dir_to_check/* > /dev/null 2>&1 )
+        if [ $? -eq 0  ];then
+            echo "yes"
+        else
+            echo "no"
+        fi
+        rm -fr "$dir_to_check/test"
+    fi
+}
+
+function report_base_path(){
+    base_path="/tmp"
+    # Is Git Directory
+    if [[ $(is_git_dir) == "yes" ]]; then
+        # Is report directory in .gitignore
+        if [[ $(is_dir_in_gitignore ) == "yes"  ]];then
+            base_path="${PWD}"
+        fi
+    fi
+    report_dir="${base_path}/reports"
+    if [ ! -d $report_dir ];then
+        mkdir -p $report_dir
+    fi
+    echo $report_dir
+}
+
+function aws_vault_backend_passphrase(){
+    case "$AWS_VAULT_BACKEND" in
+        file)
+            read -s -r -p 'AWS Vault Passphrase : ' PASSPHRASE
+            export AWS_VAULT_FILE_PASSPHRASE=$PASSPHRASE
+        ;;
+        pass);; #Do Nothing
+        *) echo -e "Non supported AWS_VAULT_BACKEND=$AWS_VAULT_BACKEND" ;;
+    esac
+}
+
+
 # Wrapper To Aid TDD
 function _run_main() {
   _create_directory_if_not_exists "$@"
@@ -338,6 +394,10 @@ function _run_main() {
   run_pre_commit "$@"
   git-ssh-fix "$@"
   init_sentry "$@"
+  is_git_dir "$@"
+  is_dir_in_gitignore "$@"
+  report_base_path "$@"
+  aws_vault_backend_passphrase "$@"
 }
 
 # Wrapper To Aid TDD

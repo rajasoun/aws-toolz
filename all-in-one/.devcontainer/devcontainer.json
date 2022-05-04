@@ -1,0 +1,26 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+	"name": "AWS Toolz",
+	"build": {
+		"dockerfile": "Dockerfile",
+	},
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.defaultProfile.linux": "zsh"
+	},
+	//  ptrace-based debugger like C++, Go, and Rust
+	"runArgs": [
+		"--cap-add=SYS_PTRACE",
+		"--security-opt",
+		"seccomp=unconfined"
+	],
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+		"source=${localWorkspaceFolder}/.devcontainer/.aws,target=/home/vscode/.aws,type=bind",
+		"source=${localWorkspaceFolder}/.devcontainer/.store,target=/home/vscode/.password-store,type=bind",
+	],
+	"remoteUser": "vscode",
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [],
+	"features": {},
+}
