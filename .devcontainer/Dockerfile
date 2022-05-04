@@ -23,7 +23,7 @@ RUN set -x \
     && apt-get -y install --no-install-recommends \
        zsh-autosuggestions \
        zsh-syntax-highlighting \
-       pass gnupg2 httpie \
+       pass gnupg2 httpie netcat \
     && apt-get autoremove -y  \
     && apt-get clean -y \
     && rm -r /var/cache/* /var/lib/apt/lists/*

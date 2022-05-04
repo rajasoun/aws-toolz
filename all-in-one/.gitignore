@@ -1,0 +1,6 @@
+.aws
+.gpg2
+.gpg2/keys
+.ssh
+.store
+dotfiles/.gitconfig
