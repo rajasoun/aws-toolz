@@ -141,7 +141,7 @@ function launch(){
 function check_create_local_git(){
     git init
     git add -A
-    git commit -m "feat(shell): aws-toolz initial checkin" --no-noverify
+    git commit -m "feat(shell): aws-toolz initial checkin" --no-verify
 }
 
 function prepare_environment(){
@@ -165,19 +165,6 @@ function prepare_environment(){
 }
 
 
-function configure_env(){
-    ENV=$1
-    if [ "$ENV" = "dev" ]; then
-        echo "$(date)" > "$(git rev-parse --show-toplevel)/.dev"
-        echo -e "\n${BOLD}${UNDERLINE}CI Shell For Dev${NC}"
-        rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
-    else
-        echo "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
-        echo -e "\n${BOLD}${UNDERLINE}CI Shell For Ops${NC}"
-        rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
-    fi
-}
-
 function configure_entry_point(){
     ENTRY_POINT_CMD=$1
     if [ -z $ENTRY_POINT_CMD ]; then
@@ -191,15 +178,17 @@ function main(){
     echo -e "${BOLD} Zero Configuration Environment Setup ${NC}"
     if [ ! -f "$BASE_DIR/.env_done" ];then
         echo -e " Starting Environment Preparation  ${NC}"
-        prepare_environment && cd $BASE_DIR && $SHELL
+        prepare_environment
         touch "$BASE_DIR/.env_done"
+        echo -e "${BOLD}${GREEN}\n Run : cd $BASE_DIR && ./aws-toolz.sh\n${NC}"
+        exit 0
     else
         echo -e "${GREEN}\nEnvironment Preparation Already DONE ${NC}"
     fi
-
-    _git_config
-    check_create_local_git
-    configure_env $ENV
+    if [ ! -f "$BASE_DIR/.env" ];then
+        _git_config
+        check_create_local_git
+    fi
     configure_entry_point $ENTRY_POINT_CMD
     launch $ENTRY_POINT_CMD
 }
