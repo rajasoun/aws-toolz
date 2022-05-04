@@ -8,10 +8,10 @@ GREEN=$'\e[32m'
 BLUE=$'\e[34m'
 ORANGE=$'\x1B[33m'
 
-BASE_DIR="${PWD}/.devcontainer"
-BASE_URL="https://raw.githubusercontent.com/rajasoun/aws-toolz/main/all-in-one/.devcontainer"
+BASE_DIR="${PWD}/aws-toolz-1.0.1"
+BASE_URL="https://raw.githubusercontent.com/rajasoun/aws-toolz/main/all-in-one"
 
-GIT_CONFIG_DIR="${PWD}/.devcontainer/dotfiles"
+GIT_CONFIG_DIR="${BASE_DIR}/.devcontainer/dotfiles"
 GIT_CONFIG_FILE="${GIT_CONFIG_DIR}/.gitconfig"
 
 export name="rajasoun/aws-toolz"
@@ -73,39 +73,43 @@ function check_create_dir(){
     DIR_PATH=$1
     if [ ! -d "$DIR_PATH" ];then
         mkdir -p "$DIR_PATH"
-        echo -e "Directory -> $DIR_PATH Created"
+        echo -e "Directory -> $DIR_PATH Creation DONE"
     else
         echo -e "${GREEN}Directory -> $DIR_PATH Exists${NC}"
     fi
 }
 
 function check_download_file(){
-    FILE=$1
-    FILE_DIR=$2
-    if [ ! -f "$BASE_DIR/$FILE" ];then
-        wget -q "$BASE_URL/$FILE" -P "$FILE_DIR"
-        echo -e "     File -> $FILE_DIR/$FILE Download Done "
+    FILE="${BASE_DIR}/$1"
+    DESITINATION_DIR="${BASE_DIR}/$2"
+    if [ ! -f "$FILE" ];then
+        wget  -q "$BASE_URL/$1" -P "$DESITINATION_DIR"
+        if [ "$?" ]; then
+            echo -e "     File -> $FILE Download DONE"
+        else
+            echo -e "     File -> $FILE Download Failed"
+        fi
     else
-        echo -e "${GREEN}     File -> $FILE_DIR/$FILE Exists ${NC}"
+        echo -e "${GREEN}     File -> $FILE Exists ${NC}"
     fi
 }
 
 function _git_config() {
   #_backup_remove_git_config
   if [ ! -f $GIT_CONFIG_FILE ];then
-    cp .devcontainer/dotfiles/.gitconfig.sample $GIT_CONFIG_FILE
+    cp "${GIT_CONFIG_DIR}/.gitconfig.sample" "$GIT_CONFIG_FILE"
 	echo -e "${GREEN}${UNDERLINE}Generating .gitconfig${NC}\n"
     MSG="${ORANGE}  Full Name ${NC}${ORANGE}(without eMail) : ${NC}"
     printf "$MSG"
     read -r "USER_NAME"
-    _file_replace_text "___YOUR_NAME___"  "$USER_NAME"  ".devcontainer/dotfiles/.gitconfig"
+    _file_replace_text "___YOUR_NAME___"  "$USER_NAME"  "$GIT_CONFIG_FILE"
     MSG="${ORANGE}  EMail ${NC}${ORANGE} : ${NC}"
     printf "$MSG"
     read -r "EMAIL"
-    _file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
+    _file_replace_text "___YOUR_EMAIL___" "$EMAIL" "$GIT_CONFIG_FILE"
     echo -e "\nGit Config Gneration for $USER_NAME Done !!!"
 	else
-		echo -e "${ORANGE}\n.devcontainer/dotfiles/.gitconfig Exists${NC}"
+		echo -e "${ORANGE}\n$GIT_CONFIG_FILE Exists${NC}"
 	fi
 
 }
@@ -137,55 +141,60 @@ function launch(){
 function check_create_local_git(){
     git init
     git add -A
-    git commit -m "feat(shell): aws-toolz initial checkin"
-}
-
-function create_workspace(){
-    workspace_dir=$1
-    if [ ! -d $workspace_dir ];then
-        mkdir -p $workspace_dir
-        echo -e "Workspace -> $workspace_dir Created"
-    else
-        echo -e "${GREEN}Workspace -> $workspace_dir Exists${NC}"
-    fi
-    echo -e "\n${UNDERLINE}Switching to Workspace $workspace_dir${NC}\n"
-    cd $workspace_dir
+    git commit -m "feat(shell): aws-toolz initial checkin" --no-noverify
 }
 
 function prepare_environment(){
-    echo -e "${BOLD} Zero Configuration Environment Setup ${NC}"
-    create_workspace "$HOME/workspace/aws-toolz-1.0.1"
-    check_create_dir "$BASE_DIR/.aws"
-    check_create_dir "$BASE_DIR/.gpg2"
-    check_create_dir "$BASE_DIR/.gpg2/keys"
-    check_create_dir "$BASE_DIR/.ssh"
-    check_create_dir "$BASE_DIR/.store"
-    check_create_dir "$BASE_DIR/dotfiles"
-    check_download_file "dotfiles/.gitconfig.sample" "$BASE_DIR/dotfiles"
-    check_download_file "Makefile" "$BASE_DIR"
-    check_download_file "devcontainer.json" "$BASE_DIR"
-    check_download_file "Dockerfile" "$BASE_DIR"
-    _git_config
-    check_create_local_git
+    check_create_dir "$BASE_DIR/.devcontainer/.aws"
+    check_create_dir "$BASE_DIR/.devcontainer/.gpg2"
+    check_create_dir "$BASE_DIR/.devcontainer/.gpg2/keys"
+    check_create_dir "$BASE_DIR/.devcontainer/.ssh"
+    check_create_dir "$BASE_DIR/.devcontainer/.store"
+    check_create_dir "$BASE_DIR/.devcontainer/dotfiles"
+
+    check_download_file ".devcontainer/dotfiles/.gitconfig.sample" ".devcontainer/dotfiles/"
+    check_download_file ".devcontainer/Makefile" ".devcontainer"
+    check_download_file ".devcontainer/devcontainer.json" ".devcontainer"
+    check_download_file ".devcontainer/Dockerfile" ".devcontainer"
+    check_download_file "aws-toolz.sh"
+    check_download_file ".gitignore"
+    check_download_file "speed.sh"
+    check_download_file "README.md"
+    check_download_file "aws-toolz.sh"
+    chmod a+x "$BASE_DIR/speed.sh" "$BASE_DIR/aws-toolz.sh"
 }
 
-ENV=$1
-ENTRY_POINT_CMD=$2
 
-prepare_environment
+function configure_env(){
+    ENV=$1
+    if [ "$ENV" = "dev" ]; then
+        echo "$(date)" > "$(git rev-parse --show-toplevel)/.dev"
+        echo -e "\n${BOLD}${UNDERLINE}CI Shell For Dev${NC}"
+        rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
+    else
+        echo "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
+        echo -e "\n${BOLD}${UNDERLINE}CI Shell For Ops${NC}"
+        rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
+    fi
+}
 
-if [ "$ENV" = "dev" ]; then
-    echo "$(date)" > "$(git rev-parse --show-toplevel)/.dev"
-    echo -e "\n${BOLD}${UNDERLINE}CI Shell For Dev${NC}"
-    rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
-else
-    echo "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
-    echo -e "\n${BOLD}${UNDERLINE}CI Shell For Ops${NC}"
-    rm -fr "$(date)" > "$(git rev-parse --show-toplevel)/.ops"
-fi
+function configure_entry_point(){
+    ENTRY_POINT_CMD=$1
+    if [ -z $ENTRY_POINT_CMD ]; then
+        ENTRY_POINT_CMD="/bin/zsh"
+    fi
+}
 
-if [ -z $ENTRY_POINT_CMD ]; then
-    ENTRY_POINT_CMD="/bin/zsh"
-fi
+function main(){
+    ENV=$1
+    ENTRY_POINT_CMD=$2
+    echo -e "${BOLD} Zero Configuration Environment Setup ${NC}"
+    prepare_environment && cd $BASE_DIR && $SHELL
+    _git_config
+    check_create_local_git
+    configure_env $ENV
+    configure_entry_point $ENTRY_POINT_CMD
+    launch $ENTRY_POINT_CMD
+}
 
-launch $ENTRY_POINT_CMD
+main $@
