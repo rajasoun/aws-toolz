@@ -8,7 +8,7 @@ GREEN=$'\e[32m'
 BLUE=$'\e[34m'
 ORANGE=$'\x1B[33m'
 
-BASE_DIR="${PWD}/aws-toolz-1.0.1"
+BASE_DIR="${HOME}/workspace/tools/aws-toolz-1.0.1"
 BASE_URL="https://raw.githubusercontent.com/rajasoun/aws-toolz/main/all-in-one"
 
 GIT_CONFIG_DIR="${BASE_DIR}/.devcontainer/dotfiles"
