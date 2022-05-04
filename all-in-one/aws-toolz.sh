@@ -180,14 +180,18 @@ function main(){
         echo -e " Starting Environment Preparation  ${NC}"
         prepare_environment
         touch "$BASE_DIR/.env_done"
-        echo -e "${BOLD}${GREEN}\n Run : cd $BASE_DIR && ./aws-toolz.sh\n${NC}"
-        exit 0
+        echo -e "${RED}\n Run : ${NC}\n${YELLOW}cd $BASE_DIR \n./aws-toolz.sh\n${NC}"
+        exit
     else
         echo -e "${GREEN}\nEnvironment Preparation Already DONE ${NC}"
     fi
+    if [   ${PWD} != $BASE_DIR   ];then
+        echo -e "${RED}\n Run : ${NC}\n${YELLOW}cd $BASE_DIR \n./aws-toolz.sh\n${NC}"
+        exit 0
+    fi
     if [ ! -f "$BASE_DIR/.env" ];then
-        _git_config
-        check_create_local_git
+            _git_config
+            check_create_local_git
     fi
     configure_entry_point $ENTRY_POINT_CMD
     launch $ENTRY_POINT_CMD
