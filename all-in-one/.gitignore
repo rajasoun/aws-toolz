@@ -6,3 +6,4 @@
 dotfiles/.gitconfig
 .dev
 .ops
+.env_done

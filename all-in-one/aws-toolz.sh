@@ -160,7 +160,7 @@ function prepare_environment(){
     check_download_file ".gitignore"
     check_download_file "speed.sh"
     check_download_file "README.md"
-    check_download_file "aws-toolz.sh"
+    check_download_file ".env.sample"
     chmod a+x "$BASE_DIR/speed.sh" "$BASE_DIR/aws-toolz.sh"
 }
 
@@ -189,7 +189,14 @@ function main(){
     ENV=$1
     ENTRY_POINT_CMD=$2
     echo -e "${BOLD} Zero Configuration Environment Setup ${NC}"
-    prepare_environment && cd $BASE_DIR && $SHELL
+    if [ ! -f "$BASE_DIR/.env_done" ];then
+        echo -e " Starting Environment Preparation  ${NC}"
+        prepare_environment && cd $BASE_DIR && $SHELL
+        touch "$BASE_DIR/.env_done"
+    else
+        echo -e "${GREEN}\nEnvironment Preparation Already DONE ${NC}"
+    fi
+
     _git_config
     check_create_local_git
     configure_env $ENV
