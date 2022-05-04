@@ -140,8 +140,20 @@ function check_create_local_git(){
     git commit -m "feat(shell): aws-toolz initial checkin"
 }
 
+function create_workspace(){
+    workspace_dir=$1
+    if [ ! -d $workspace_dir ];then
+        mkdir -p $workspace_dir
+        cd $workspace_dir
+        echo -e "Workspace -> $workspace_dir Created"
+    else
+        echo -e "${GREEN}Workspace -> $workspace_dir Exists${NC}"
+    fi
+}
+
 function prepare_environment(){
     echo -e "${BOLD} Zero Configuration Environment Setup ${NC}"
+    create_workspace "$BASE_DIR/aws-toolz-1.0.1"
     check_create_dir "$BASE_DIR/.aws"
     check_create_dir "$BASE_DIR/.gpg2"
     check_create_dir "$BASE_DIR/.gpg2/keys"
