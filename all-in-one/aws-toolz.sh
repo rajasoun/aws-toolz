@@ -144,16 +144,17 @@ function create_workspace(){
     workspace_dir=$1
     if [ ! -d $workspace_dir ];then
         mkdir -p $workspace_dir
-        cd $workspace_dir
         echo -e "Workspace -> $workspace_dir Created"
     else
         echo -e "${GREEN}Workspace -> $workspace_dir Exists${NC}"
     fi
+    echo -e "\n${UNDERLINE}Switching to Workspace $workspace_dir${NC}\n"
+    cd $workspace_dir
 }
 
 function prepare_environment(){
     echo -e "${BOLD} Zero Configuration Environment Setup ${NC}"
-    create_workspace "$HOME/aws-toolz-1.0.1"
+    create_workspace "$HOME/workspace/aws-toolz-1.0.1"
     check_create_dir "$BASE_DIR/.aws"
     check_create_dir "$BASE_DIR/.gpg2"
     check_create_dir "$BASE_DIR/.gpg2/keys"
