@@ -38,6 +38,7 @@ function dev_help() {
 gsetup		 - 	Install Git Flow, pre-commit & husky hooks
 ghooks		 - 	Install only pre-commit & husky hooks
 glogin		 - 	Web Login to GitHub
+ssh-config	 - 	Generate SSH public & private Keys for Git
 gstatus		 - 	GitHub Login status
 grelease	 - 	Create Git Tag & Release through Automation
 infra-test	 - 	Run End to End Test on Devcontainer Infrastructure
@@ -356,6 +357,7 @@ alias gc="cz commit"
 alias gp="git_push"
 alias gclean="git fetch --prune origin && git gc"
 alias glogin="git_hub_login $@"
+alias ssh-config="_generate_ssh_keys"
 alias gstatus="_gstatus"
 alias ghooks="_install_git_hooks"
 alias generate_git_config="_git_config"

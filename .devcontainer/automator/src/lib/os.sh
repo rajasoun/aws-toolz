@@ -232,18 +232,26 @@ function _git_config() {
 
 }
 
+function backup_ssh_keys(){
+    echo -e "Backing up existing keys"
+    rm -fr $(dirname $PRIVATE_KEY)/backup
+    mkdir -p $(dirname $PRIVATE_KEY)/backup
+    cp $PRIVATE_KEY $(dirname $PRIVATE_KEY)/backup
+    cp $PUBLIC_KEY $(dirname $PRIVATE_KEY)/backup
+}
+
 function _generate_ssh_keys() {
   if [ ! -f $PUBLIC_KEY  ];then
     echo -e "${GREEN}${UNDERLINE}\nGenerating SSH Keys for $USER_NAME${NC}\n"
     _is_command_found ssh-keygen
-    debug "Generating SSH Keys for $USER_NAME"
+    echo -e "Generating SSH Keys for $USER_NAME"
     ssh-keygen -q -t rsa -N '' -f "$PRIVATE_KEY" -C "$EMAIL" <<<y 2>&1 >/dev/null
 
     echo "Set File Permissions"
     # Fix Permission For Private Key
     chmod 400 "$PUBLIC_KEY"
     chmod 400 "$PRIVATE_KEY"
-    debug "SSH Keys Generated Successfully"
+    echo -e "SSH Keys Generated Successfully"
     _copy_to_clipboard "$PUBLIC_KEY"
     _print_details
     if  [ -f "$(git rev-parse --show-toplevel)/.env" ]; then
@@ -278,23 +286,24 @@ function _configure_ssh_gitconfig() {
   _generate_ssh_keys
 }
 
-# ToDo: Technical Debt : Git SSH Fix : Priority P3
+# Git SSH Fix - If devcontainer Terminal starts before initialization
 function git-ssh-fix() {
   ERROR_MSG="${RED}Private SSH Key Not Present. DONT PANIC.${NC}"
-  NEXT_STEP="Run ${GREEN}config${NC} again... Exiting"
+  NEXT_STEP="${ORANGE}Run -> ssh-config${NC} Exiting..."
   MSG="$ERROR_MSG \n $NEXT_STEP"
   [[ ! -f "$PRIVATE_KEY" ]] && echo -e "$MSG" && return 1
-  # Check In Terminal
-  ssh-add -l > /dev/null || (eval $(ssh-agent -s) && ssh-add $PRIVATE_KEY)
-  echo "${BOLD}Git SSH Hack Fix${NC}"
-  # check if ssh key is already added
-  ssh-add -l >/dev/null || echo "SSH Key "
-  if [ "$(ssh-add -l | wc -l)" = 0 ]; then
-    echo "Adding SSH Key"
-    eval "$(ssh-agent -s)" && ssh-add $PRIVATE_KEY
+
+  ssh-add -l > /dev/null
+  EXIT_CODE=$?
+  if [  "$EXIT_CODE" = 1  ];then
+      echo -e "${ORANGE}SSH Identities Not Present${NC}"
+      echo -e "Starting Fresh ssh-agen & Adding $PRIVATE_KEY to ssh-add"
+      echo -e "Running -> eval $(ssh-agent -s) && ssh-add $PRIVATE_KEY"
+      eval "$(ssh-agent -s)" && ssh-add $PRIVATE_KEY
   else
-    echo "${GREEN}SSH Key Already Added. Hack Fix Not Required !!!${NC}"
-    ssh-add -l
+      echo -e "${GREEN}SSH Identiies Present. Fix Not Required${NC}"
+      echo -e "${ORANGE}Run -> gstatus${NC}"
+      ssh-add -l
   fi
 }
 
