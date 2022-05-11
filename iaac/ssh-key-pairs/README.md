@@ -7,39 +7,60 @@
 
 ## SSH Key Setup Overview
 
-| S.No | Client                        | Remote Server                              |
-| :--- | :---------------------------- | :----------------------------------------- |
-| 1.   | Generate the SSH Key Pair     | Provision rmote server with the Public Key |
-|      | ssh-keygen                    |                                            |
-| 2    | Start SSH Agent               |                                            |
-|      | eval "$(ssh-agent -s)"        |                                            |
-| 3    | Load Private Key to SSH Agent |                                            |
-|      | ssh-add -K private_key        |                                            |
-| 4    | ssh -F <ssh-config> host or   |                                            |
-|      | ssh -i <private-key>user@ip   |                                            |
+[Example GitHub SSH Setup]()
 
+| S.No | Client   (Laptop)             | Remote Server (GitHub)                     |
+| :--- | :---------------------------- | :----------------------------------------- |
+| 1    | Generate the SSH Key Pair              | Provision rmote server with the Public Key |
+|      | [ssh-keygen][1]                        |                                            |
+| 2    | [Add Public Key][2]                    | [GitHub Keys][3]                           |
+| 3    | Start SSH Agent                        |                                            |
+|      | `eval "$(ssh-agent -s)"`               |                                            |
+| 4    | Load Private Key to SSH Agent          |                                            |
+|      | `ssh-add -K $PRIVATE_KEY`              |                                            |
+| 5    | Check the setup                        |                                            |
+|      | `ssh -i $PRIVATE_KEY user@github.com`  |                                            |
 
 ## Generating Keys
 
 In Terminal Window
 
-```sh
-KEY_PATH="keys"
-PRIVATE_KEY="$KEY_PATH/id_rsa"
-PUBLIC_KEY="$KEY_PATH/id_rsa.pub"
-vared -p 'EMail : ' -c EMAIL
-echo -e "Generating SSH Keys for $EMAIL"
-#ssh-keygen -q -t rsa -N '' -f "$PRIVATE_KEY" -C "$EMAIL" <<<y 2>&1 >/dev/null
-ssh-keygen -q -t rsa -N '' -f "$PRIVATE_KEY" -C "$EMAIL" <<<y
+```bash
+
+function ssh_key_gen(){
+    KEY_PATH="keys"
+    PRIVATE_KEY="$KEY_PATH/id_rsa"
+    PUBLIC_KEY="$KEY_PATH/id_rsa.pub"
+    if  [ ! -f $PRIVATE_KEY ] && [ ! -f $PUBLIC_KEY ] ;then
+        vared -p 'GitHub EMail : ' -c EMAIL
+        echo -e "Generating SSH Keys for $EMAIL"
+        ssh-keygen -q -t rsa -N '' -f "$PRIVATE_KEY" -C "$EMAIL" <<<y 2>&1 >/dev/null
+        echo -e "Applinf permissions to keys"
+        chmod 400 "$PRIVATE_KEY" "$PUBLIC_KEY"
+    else
+        echo -e "SSH Keys Already Exists in $(realpath $KEY_PATH)"
+    fi
+}
+
+ssh_key_gen
+
 ```
+
+## Add Public Key to GitHub
+
+1. Switch to direction `cd iaac/ssh-key-pairs`
+1. Run `cat keys/id_rsa.pub `
+1. Copy and Paste into [GitHub Keys][3]
+
+> All SSH Keys get stored in $HOME/.ssh. For self study storing in the custom directory
 
 ## Signing Message & Validating It
 
 In same Terminal window
 
 ```sh
-MESSAGE="Hello, World"
-echo $MESSAGE | ssh-keygen -Y sign -n file -f "$PRIVATE_KEY" > message.signed
+vared -p 'Random Message : ' -c RANDOM_MESSAGE
+echo $RANDOM_MESSAGE | ssh-keygen -Y sign -n file -f "$PRIVATE_KEY" > message.signed
 ```
 
 ## Validate Message
@@ -47,5 +68,9 @@ echo $MESSAGE | ssh-keygen -Y sign -n file -f "$PRIVATE_KEY" > message.signed
 In same Terminal Window
 
 ```sh
-echo $MESSAGE | ssh-keygen -Y check-novalidate -n file -f "$PUBLIC_KEY" -s message.signed
+echo $RANDOM_MESSAGE | ssh-keygen -Y check-novalidate -n file -f "$PUBLIC_KEY" -s message.signed
 ```
+
+[1](#generating-keys)
+[2](#add-public-key-to-gitbub)
+[3](https://github.com/settings/keys)
