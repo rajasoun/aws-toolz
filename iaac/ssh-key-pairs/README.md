@@ -1,6 +1,6 @@
 # SSH Key Pairs
 
-## SSH Autehtication Flow
+## SSH Authentication Flow
 
 ![ssh-auth-flow excalidraw](https://user-images.githubusercontent.com/1337971/167814389-7de485a6-e5e6-4810-ad18-fb53781d5e25.svg)
 
