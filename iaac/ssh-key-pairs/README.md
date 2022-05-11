@@ -7,16 +7,16 @@
 
 ## SSH Key Setup Overview
 
-| S.No |               Client          |                 Host                 |
-|:-----|:------------------------------|:-------------------------------------|
-| 1.   | Generate the SSH Key Pair     | Provision VM with the Public Key     |
-|      | ssh-keygen                    | cloud-int or Vagrant or Packer       |
-| 2    | Start SSH Agent               |                                      |
-|      | eval "$(ssh-agent -s)"        |                                      |
-| 3    | Load Private Key to SSH Agent |                                      |
-|      | ssh-add -K private_key        |                                      |
-| 4    | ssh -F <ssh-config> host or   |                                      |
-|      | ssh -i <private-key>user@ip   |                                      |
+| S.No | Client                        | Remote Server                              |
+| :--- | :---------------------------- | :----------------------------------------- |
+| 1.   | Generate the SSH Key Pair     | Provision rmote server with the Public Key |
+|      | ssh-keygen                    |                                            |
+| 2    | Start SSH Agent               |                                            |
+|      | eval "$(ssh-agent -s)"        |                                            |
+| 3    | Load Private Key to SSH Agent |                                            |
+|      | ssh-add -K private_key        |                                            |
+| 4    | ssh -F <ssh-config> host or   |                                            |
+|      | ssh -i <private-key>user@ip   |                                            |
 
 
 ## Generating Keys
