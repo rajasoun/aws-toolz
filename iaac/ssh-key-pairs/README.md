@@ -72,5 +72,5 @@ echo $RANDOM_MESSAGE | ssh-keygen -Y check-novalidate -n file -f "$PUBLIC_KEY" -
 ```
 
 [1]: #generating-keys
-[2]: #add-public-key-to-gitbub
+[2]: #add-public-key-to-github
 [3]: https://github.com/settings/keys
