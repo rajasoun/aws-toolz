@@ -12,8 +12,8 @@
 | S.No | Client   (Laptop)             | Remote Server (GitHub)                     |
 | :--- | :---------------------------- | :----------------------------------------- |
 | 1    | Generate the SSH Key Pair              | Provision rmote server with the Public Key |
-|      | [ssh-keygen][1]                        |                                            |
-| 2    | [Add Public Key][2]                    | [GitHub Keys][3]                           |
+|      | [ssh-keygen](1)                        |                                            |
+| 2    | [Add Public Key](2)                    | [GitHub Keys](3)                           |
 | 3    | Start SSH Agent                        |                                            |
 |      | `eval "$(ssh-agent -s)"`               |                                            |
 | 4    | Load Private Key to SSH Agent          |                                            |
@@ -71,6 +71,6 @@ In same Terminal Window
 echo $RANDOM_MESSAGE | ssh-keygen -Y check-novalidate -n file -f "$PUBLIC_KEY" -s message.signed
 ```
 
-[1](#generating-keys)
-[2](#add-public-key-to-gitbub)
-[3](https://github.com/settings/keys)
+[1]: #generating-keys
+[2]: #add-public-key-to-gitbub
+[3]: https://github.com/settings/keys
