@@ -153,6 +153,7 @@ function prepare_environment(){
     check_create_dir "$BASE_DIR/.devcontainer/dotfiles"
 
     check_download_file ".devcontainer/dotfiles/.gitconfig.sample" ".devcontainer/dotfiles/"
+    check_download_file ".devcontainer/.aws/aws_vault_env.sh" ".devcontainer/.aws"
     check_download_file ".devcontainer/Makefile" ".devcontainer"
     check_download_file ".devcontainer/devcontainer.json" ".devcontainer"
     check_download_file ".devcontainer/Dockerfile" ".devcontainer"

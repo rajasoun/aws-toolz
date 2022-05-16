@@ -2,5 +2,5 @@
 Development container version information
 
 - Image version: 1.0.1
-- SHA: 552cb9c7b04d98a3a8b930f85dc59e559cdc6335d4da6b7d0aeec53e85e63282
+- SHA: 19fa2a199af4cd13ba08832e70edd873bdb67ba50877a59e0988a24edd15f8e9
 - Source code repository: git@github.com:rajasoun/aws-toolz.git
