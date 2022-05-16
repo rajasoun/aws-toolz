@@ -225,6 +225,8 @@ function _git_config() {
     printf "$MSG"
     read -r "EMAIL"
     _file_replace_text "___YOUR_EMAIL___" "$EMAIL" ".devcontainer/dotfiles/.gitconfig"
+    git config --global user.name   "$USER_NAME"
+    git config --global user.emanil "$EMAIL"
     echo -e "\nGit Config Gneration for $USER_NAME Done !!!"
 	else
 		echo -e "${ORANGE}\n.devcontainer/dotfiles/.gitconfig Exists${NC}"

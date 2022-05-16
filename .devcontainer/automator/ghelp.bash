@@ -274,9 +274,13 @@ function generate_gpg_keys(){
 	mkdir -p .devcontainer/.gpg2/keys
 	find "$PGP_DIR" -type f -exec chmod 600 {} \; # Set 600 for files
 	find "$PGP_DIR" -type d -exec chmod 700 {} \; # Set 700 for directories
-	create_gpg_keys
-	list_gpg_keys
-	store_gpg_keys
+	if [ -d "${PWD}/.devcontainer/.gpg2/keys/public.key" ]; then
+		create_gpg_keys
+		list_gpg_keys
+		store_gpg_keys
+	else
+		echo -e "GPG Key Exists. Run -> clean_configs to remove all configs"
+	fi
 }
 
 function init_pass_store(){
@@ -287,8 +291,10 @@ function init_pass_store(){
 }
 
 function clean_configs(){
+	rm -fr .devcontainer/dotfiles/.gitconfig
 	rm -fr .devcontainer/.ssh/known_hosts
-	rm -fr .devcontainer/.ssh/*id_rsa*
+	rm -fr .devcontainer/.ssh/id_rsa
+	rm -fr .devcontainer/.ssh/id_rsa.pub
 	rm -fr .devcontainer/.gpg2/keys/
 	rm -fr .devcontainer/.store/aws-vault
 	rm -fr .devcontainer/.store/.gpg-id
@@ -307,7 +313,7 @@ function backup_configs(){
 
 function aws_whoami(){
 	AWS_PROFILE="$1"
-	AWS_WHOAMI_CMD="$(git rev-parse --show-toplevel)/aws-cost-hub/cost-explorer/libs/identity.py"
+	AWS_WHOAMI_CMD="/workspaces/tools/identity.py"
 	AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
 	if [ -z $AWS_PROFILE ];then
 		#AWS_PROFILE Empty
@@ -327,7 +333,7 @@ function aws_bill(){
 		echo -e "aws-bill <aws_profile>\n"
 	else
 		#AWS_PROFILE Not Empty
-		AWS_BILL_CMD="$(git rev-parse --show-toplevel)/aws-cost-hub/cost-explorer/bill.py --profile $AWS_PROFILE --log Warn"
+		AWS_BILL_CMD="/workspaces/tools/bill.sh"
 		AWS_VAULT_WRAPPER="$(git rev-parse --show-toplevel)/.devcontainer/.aws/aws_vault_env.sh"
 		export AWS_PROFILE=$AWS_PROFILE && $AWS_VAULT_WRAPPER $AWS_BILL_CMD
 	fi
