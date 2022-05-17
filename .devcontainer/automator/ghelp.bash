@@ -274,7 +274,7 @@ function generate_gpg_keys(){
 	mkdir -p .devcontainer/.gpg2/keys
 	find "$PGP_DIR" -type f -exec chmod 600 {} \; # Set 600 for files
 	find "$PGP_DIR" -type d -exec chmod 700 {} \; # Set 700 for directories
-	if [ -d "${PWD}/.devcontainer/.gpg2/keys/public.key" ]; then
+	if [ ! -d "${PWD}/.devcontainer/.gpg2/keys/public.key" ]; then
 		create_gpg_keys
 		list_gpg_keys
 		store_gpg_keys
