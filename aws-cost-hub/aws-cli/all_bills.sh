@@ -59,7 +59,7 @@ function aws_vault_backend_passphrase(){
 }
 
 function sso_login(){
-    login_status=$(aws-sso -config ~/.aws/sso.json  > /dev/null 2>&1)
+    login_status=$(echo "y" | aws-sso -config ~/.aws/sso.json  > /dev/null 2>&1)
     if [ $? -eq 0 ]; then
         echo "yes"
     else
@@ -68,6 +68,8 @@ function sso_login(){
 }
 
 function check_sso_login(){
+    echo -e "${ORANGE}\nSSO Login with MFA support Initiated...${NC}"
+    echo -e "${BOLD}Approve Push Notification${NC}"
     if [[ $(sso_login) == "yes"  ]];then
         echo "${GREEN}SSO Login successfull${NC}"
     else
