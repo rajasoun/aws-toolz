@@ -1,9 +1,9 @@
 aws-audit==0.1.0
-pre-commit==2.17.0
-commitizen==2.21.2
+pre-commit==2.19.0
+commitizen==2.27.1
 python-dotenv[cli]==0.20.0
-boto3==1.21.44
-botocore==1.24.44
+boto3==1.23.10
+botocore==1.26.10
 python-dotenv[cli]==0.20.0
 tabulate==0.8.9
 pandas==1.4.2
