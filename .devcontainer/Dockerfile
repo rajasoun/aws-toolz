@@ -134,7 +134,7 @@ COPY --from=fetch           /usr/local/bin/fetch        /usr/local/bin/fetch
 COPY --from=syft-grype      /usr/local/bin/syft         /usr/local/bin/syft
 COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
 
-COPY --from=rajasoun/aws-sso:1.0.0  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
+COPY --from=rajasoun/aws-sso:1.0.1  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
 
 RUN fetch --repo="https://github.com/rajasoun/aws-toolz" \
     --tag="1.0.1" \
