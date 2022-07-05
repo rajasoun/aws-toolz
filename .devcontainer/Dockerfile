@@ -102,6 +102,21 @@ RUN set -ex \
     && curl -sSfL "$SYFT_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin \
     && curl -sSfL "$GRYPE_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin
 
+# kubectl
+FROM toolz-base as kubectl
+RUN set -ex \
+    && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+    && curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256" \
+    && echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check \
+    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+    && kubectl version --client
+
+# Pulumi
+FROM toolz-base as pulumi
+RUN set -ex \
+    && curl -fsSL https://get.pulumi.com | bash -s -- --version $PULUMI_VERSION \
+    && mv ~/.pulumi/bin/* /usr/local/bin
+
 FROM base
 # Sentry CLI
 RUN set -ex \
@@ -133,6 +148,8 @@ COPY --from=awless          /usr/local/bin/awless       /usr/local/bin/awless
 COPY --from=fetch           /usr/local/bin/fetch        /usr/local/bin/fetch
 COPY --from=syft-grype      /usr/local/bin/syft         /usr/local/bin/syft
 COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
+COPY --from=kubectl         /usr/local/bin/kubectl      /usr/local/bin/kubectl
+COPY --from=pulumi          /usr/local/bin/pulumi       /usr/local/bin/pulumi
 
 COPY --from=rajasoun/aws-sso:1.0.1  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
 
