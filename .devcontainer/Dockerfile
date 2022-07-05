@@ -111,6 +111,19 @@ RUN set -ex \
     && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
     && kubectl version --client
 
+# eksctl
+FROM toolz-base as eksctl
+ENV EKSCTL_TAR="https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz"
+RUN set -ex \
+    && curl --silent --location "$EKSCTL_TAR" | tar xz -C /tmp \
+    && mv /tmp/eksctl /usr/local/bin \
+    && chmod +x /usr/local/bin/eksctl
+
+# helm
+FROM toolz-base as helm
+RUN set -ex \
+    && curl -sSfL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
 # Pulumi
 FROM toolz-base as pulumi
 RUN set -ex \
@@ -149,6 +162,8 @@ COPY --from=fetch           /usr/local/bin/fetch        /usr/local/bin/fetch
 COPY --from=syft-grype      /usr/local/bin/syft         /usr/local/bin/syft
 COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
 COPY --from=kubectl         /usr/local/bin/kubectl      /usr/local/bin/kubectl
+COPY --from=eksctl            /usr/local/bin/eksctl         /usr/local/bin/eksctl
+COPY --from=helm            /usr/local/bin/helm         /usr/local/bin/helm
 COPY --from=pulumi          /usr/local/bin/pulumi       /usr/local/bin/pulumi
 
 COPY --from=rajasoun/aws-sso:1.0.1  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
