@@ -124,6 +124,15 @@ FROM toolz-base as helm
 RUN set -ex \
     && curl -sSfL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
+# aws-iam-authenticator
+FROM toolz-base as aws-iam-authenticator
+ENV AWS_IAM_AUTHENTICATOR_VERSION=0.5.9
+ENV AWS_IAM_AUTHENTICATOR_BASE_URL=https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/
+ENV AWS_IAM_AUTHENTICATOR_URL=${AWS_IAM_AUTHENTICATOR_BASE_URL}/${AWS_IAM_AUTHENTICATOR_VERSION}/aws-iam-authenticator_${AWS_IAM_AUTHENTICATOR_VERSION}_linux_amd64
+RUN set -ex \
+    && curl  -L -o /usr/local/bin/aws-iam-authenticator ${AWS_IAM_AUTHENTICATOR_URL} \
+    && chmod +x /usr/local/bin/aws-iam-authenticator
+
 # Pulumi
 FROM toolz-base as pulumi
 RUN set -ex \
@@ -154,17 +163,18 @@ COPY signature.txt  /opt/signature.txt
 COPY dotfiles/.czrc /home/$USERNAME/
 
 #COPY tools
-COPY --from=aws-vault       /usr/local/bin/aws-vault    /usr/local/bin/aws-vault
-COPY --from=cloud-nuke      /usr/local/bin/cloud-nuke   /usr/local/bin/cloud-nuke
-COPY --from=aws-nuke        /usr/local/bin/aws-nuke     /usr/local/bin/aws-nuke
-COPY --from=awless          /usr/local/bin/awless       /usr/local/bin/awless
-COPY --from=fetch           /usr/local/bin/fetch        /usr/local/bin/fetch
-COPY --from=syft-grype      /usr/local/bin/syft         /usr/local/bin/syft
-COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
-COPY --from=kubectl         /usr/local/bin/kubectl      /usr/local/bin/kubectl
-COPY --from=eksctl            /usr/local/bin/eksctl         /usr/local/bin/eksctl
-COPY --from=helm            /usr/local/bin/helm         /usr/local/bin/helm
-COPY --from=pulumi          /usr/local/bin/pulumi       /usr/local/bin/pulumi
+COPY --from=aws-vault               /usr/local/bin/aws-vault                /usr/local/bin/aws-vault
+COPY --from=cloud-nuke              /usr/local/bin/cloud-nuke               /usr/local/bin/cloud-nuke
+COPY --from=aws-nuke                /usr/local/bin/aws-nuke                 /usr/local/bin/aws-nuke
+COPY --from=awless                  /usr/local/bin/awless                   /usr/local/bin/awless
+COPY --from=fetch                   /usr/local/bin/fetch                    /usr/local/bin/fetch
+COPY --from=syft-grype              /usr/local/bin/syft                     /usr/local/bin/syft
+COPY --from=syft-grype              /usr/local/bin/grype                    /usr/local/bin/grype
+COPY --from=kubectl                 /usr/local/bin/kubectl                  /usr/local/bin/kubectl
+COPY --from=eksctl                  /usr/local/bin/eksctl                   /usr/local/bin/eksctl
+COPY --from=helm                    /usr/local/bin/helm                     /usr/local/bin/helm
+COPY --from=aws-iam-authenticator   /usr/local/bin/aws-iam-authenticator    /usr/local/bin/aws-iam-authenticator
+COPY --from=pulumi                  /usr/local/bin/pulumi                   /usr/local/bin/pulumi
 
 COPY --from=rajasoun/aws-sso:1.0.1  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
 
