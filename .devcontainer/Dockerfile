@@ -133,12 +133,6 @@ RUN set -ex \
     && curl  -L -o /usr/local/bin/aws-iam-authenticator ${AWS_IAM_AUTHENTICATOR_URL} \
     && chmod +x /usr/local/bin/aws-iam-authenticator
 
-# Pulumi
-FROM toolz-base as pulumi
-RUN set -ex \
-    && curl -fsSL https://get.pulumi.com | bash -s -- --version $PULUMI_VERSION \
-    && mv ~/.pulumi/bin/* /usr/local/bin
-
 FROM base
 # Sentry CLI
 RUN set -ex \
@@ -153,6 +147,10 @@ RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$PLUGIN_
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGIN_FOLDER"/zsh-autosuggestions
 RUN git clone https://github.com/blimmer/zsh-aws-vault.git "$PLUGIN_FOLDER"/zsh-aws-vault
 COPY dotfiles/.zshrc /home/$USERNAME/
+
+# Pulumi
+RUN set -ex \
+    && curl -fsSL https://get.pulumi.com | bash -s -- --version 
 
 # Copy shift-left files
 COPY shift-left     /workspaces/shift-left
@@ -174,7 +172,7 @@ COPY --from=kubectl                 /usr/local/bin/kubectl                  /usr
 COPY --from=eksctl                  /usr/local/bin/eksctl                   /usr/local/bin/eksctl
 COPY --from=helm                    /usr/local/bin/helm                     /usr/local/bin/helm
 COPY --from=aws-iam-authenticator   /usr/local/bin/aws-iam-authenticator    /usr/local/bin/aws-iam-authenticator
-COPY --from=pulumi                  /usr/local/bin/pulumi                   /usr/local/bin/pulumi
+COPY --from=pulumi                  /home/vscode/.pulumi                    /home/vscode/.pulumi
 
 COPY --from=rajasoun/aws-sso:1.0.1  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
 
