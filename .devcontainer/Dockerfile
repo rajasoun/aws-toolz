@@ -55,7 +55,7 @@ RUN set -ex \
 # cloud-nuke CLI
 FROM toolz-base as cloud-nuke
 ENV CLOUD_NUKE_URL=github.com/gruntwork-io/cloud-nuke/releases/download
-ENV CLOUD_NUKE_VERSION=v0.11.3
+ENV CLOUD_NUKE_VERSION=v0.11.6
 RUN set -ex \
     && curl -L -o /usr/local/bin/cloud-nuke \
         https://${CLOUD_NUKE_URL}/${CLOUD_NUKE_VERSION}/cloud-nuke_linux_amd64 \
@@ -64,7 +64,7 @@ RUN set -ex \
 # aws-nuke CLI
 FROM toolz-base as aws-nuke
 ENV AWS_NUKE_URL=github.com/rebuy-de/aws-nuke/releases/download
-ENV AWS_NUKE_VERSION=v2.17.0
+ENV AWS_NUKE_VERSION=v2.19.0
 ENV AWS_NUKE_EXEC=aws-nuke-${AWS_NUKE_VERSION}-linux-amd64
 
 RUN set -ex \
@@ -102,6 +102,37 @@ RUN set -ex \
     && curl -sSfL "$SYFT_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin \
     && curl -sSfL "$GRYPE_INSTALL_SCRIPT" | sh -s -- -b /usr/local/bin
 
+# kubectl
+FROM toolz-base as kubectl
+RUN set -ex \
+    && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+    && curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256" \
+    && echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check \
+    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+    && kubectl version --client
+
+# eksctl
+FROM toolz-base as eksctl
+ENV EKSCTL_TAR="https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz"
+RUN set -ex \
+    && curl --silent --location "$EKSCTL_TAR" | tar xz -C /tmp \
+    && mv /tmp/eksctl /usr/local/bin \
+    && chmod +x /usr/local/bin/eksctl
+
+# helm
+FROM toolz-base as helm
+RUN set -ex \
+    && curl -sSfL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+# aws-iam-authenticator
+FROM toolz-base as aws-iam-authenticator
+ENV AWS_IAM_AUTHENTICATOR_VERSION=0.5.9
+ENV AWS_IAM_AUTHENTICATOR_BASE_URL=https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/
+ENV AWS_IAM_AUTHENTICATOR_URL=${AWS_IAM_AUTHENTICATOR_BASE_URL}/${AWS_IAM_AUTHENTICATOR_VERSION}/aws-iam-authenticator_${AWS_IAM_AUTHENTICATOR_VERSION}_linux_amd64
+RUN set -ex \
+    && curl  -L -o /usr/local/bin/aws-iam-authenticator ${AWS_IAM_AUTHENTICATOR_URL} \
+    && chmod +x /usr/local/bin/aws-iam-authenticator
+
 FROM base
 # Sentry CLI
 RUN set -ex \
@@ -117,6 +148,10 @@ RUN git clone https://github.com/zsh-users/zsh-autosuggestions "$PLUGIN_FOLDER"/
 RUN git clone https://github.com/blimmer/zsh-aws-vault.git "$PLUGIN_FOLDER"/zsh-aws-vault
 COPY dotfiles/.zshrc /home/$USERNAME/
 
+# Pulumi
+RUN set -ex \
+    && curl -fsSL https://get.pulumi.com | bash -s -- --version 
+
 # Copy shift-left files
 COPY shift-left     /workspaces/shift-left
 COPY tests          /workspaces/tests
@@ -126,15 +161,20 @@ COPY signature.txt  /opt/signature.txt
 COPY dotfiles/.czrc /home/$USERNAME/
 
 #COPY tools
-COPY --from=aws-vault       /usr/local/bin/aws-vault    /usr/local/bin/aws-vault
-COPY --from=cloud-nuke      /usr/local/bin/cloud-nuke   /usr/local/bin/cloud-nuke
-COPY --from=aws-nuke        /usr/local/bin/aws-nuke     /usr/local/bin/aws-nuke
-COPY --from=awless          /usr/local/bin/awless       /usr/local/bin/awless
-COPY --from=fetch           /usr/local/bin/fetch        /usr/local/bin/fetch
-COPY --from=syft-grype      /usr/local/bin/syft         /usr/local/bin/syft
-COPY --from=syft-grype      /usr/local/bin/grype        /usr/local/bin/grype
+COPY --from=aws-vault               /usr/local/bin/aws-vault                /usr/local/bin/aws-vault
+COPY --from=cloud-nuke              /usr/local/bin/cloud-nuke               /usr/local/bin/cloud-nuke
+COPY --from=aws-nuke                /usr/local/bin/aws-nuke                 /usr/local/bin/aws-nuke
+COPY --from=awless                  /usr/local/bin/awless                   /usr/local/bin/awless
+COPY --from=fetch                   /usr/local/bin/fetch                    /usr/local/bin/fetch
+COPY --from=syft-grype              /usr/local/bin/syft                     /usr/local/bin/syft
+COPY --from=syft-grype              /usr/local/bin/grype                    /usr/local/bin/grype
+COPY --from=kubectl                 /usr/local/bin/kubectl                  /usr/local/bin/kubectl
+COPY --from=eksctl                  /usr/local/bin/eksctl                   /usr/local/bin/eksctl
+COPY --from=helm                    /usr/local/bin/helm                     /usr/local/bin/helm
+COPY --from=aws-iam-authenticator   /usr/local/bin/aws-iam-authenticator    /usr/local/bin/aws-iam-authenticator
+COPY --from=pulumi                  /home/vscode/.pulumi                    /home/vscode/.pulumi
 
-COPY --from=rajasoun/aws-sso:1.0.0  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
+COPY --from=rajasoun/aws-sso:1.0.1  /usr/local/bin/aws-sso  /usr/local/bin/aws-sso
 
 RUN fetch --repo="https://github.com/rajasoun/aws-toolz" \
     --tag="1.0.1" \
